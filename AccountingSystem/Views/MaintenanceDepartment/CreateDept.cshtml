@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "CreateDept";
+}
+
+<h2>新增部門</h2>
+<br />
+
+<form method="post" action="/MaintenanceDepartment/CreateDept">
+    <div class="form-group row">
+        <label for="inputDeptID" class="col-sm-2">部門代碼</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputDeptID" name="Dept_ID" class="form-control" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputDeptName" class="col-sm-2">部門名稱</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputDeptName" name="Dept_Name" class="form-control" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputCompanyID" class="col-sm-2">公司辨識碼</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputCompanyID" name="Company_ID" class="form-control" value="1" />
+        </div>
+    </div>
+    <br />
+    <input class="btn btn-outline-dark" type="submit" value="新增" />
+</form>

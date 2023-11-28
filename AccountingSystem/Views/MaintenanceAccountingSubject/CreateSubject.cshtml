@@ -1,0 +1,77 @@
+﻿
+@{
+    ViewBag.Title = "CreateSubject";
+}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+
+<h2>新增會計科目</h2>
+<br />
+
+<div class="form-group row">
+    <label for="inputSubjectID" class="col-sm-2">會計科目編碼</label>
+    <div class="col-sm-6">
+        <input type="text" id="inputSubjectID" class="form-control" />
+    </div>
+</div>
+<br />
+<div class="form-group row">
+    <label for="inputSubjectName" class="col-sm-2">會計科目</label>
+    <div class="col-sm-6">
+        <input type="text" id="inputSubjectName" class="form-control" />
+    </div>
+</div>
+<br />
+<div class="form-group row">
+    <label for="inputSubjectGroup1" class="col-sm-2">會計科目類別1</label>
+    <div class="col-sm-6">
+        <input type="text" id="inputSubjectGroup1" class="form-control" />
+    </div>
+</div>
+<br />
+<div class="form-group row">
+    <label for="inputSubjectGroup2" class="col-sm-2">會計科目類別2</label>
+    <div class="col-sm-6">
+        <input type="text" id="inputSubjectGroup2" class="form-control" />
+    </div>
+</div>
+<br />
+<button class="btn btn-outline-dark" onclick="addSubject()">
+    新增
+</button>
+
+<script>
+    var SG1 = ['1XXX-資產', '2XXX-負債', '3XXX-權益', '4XXX-收入', '5XXX-支出'];
+    $('#inputSubjectGroup1').typeahead({ source: SG1 });
+    var SG2 = ['11-流動資產', '14-非流動資產', '21-流動負債', '25-非流動負債', '31-歸屬於母公司業主之權益', '4XXX-收入', '5XXX-支出', '6600-其他綜合損益', '6700-本期綜合損益', '6800- 淨利（淨損）歸屬', '6900-綜合損益總額歸屬', '7000-基本每股盈餘', '7100-完全稀釋每股盈餘'];
+    $('#inputSubjectGroup2').typeahead({ source: SG2 });
+    function addSubject() {
+        //取得輸入值
+        var SubjectID = $('#inputSubjectID').val();
+        var SubjectName = $('#inputSubjectName').val();
+        var SubjectGroup1 = $('#inputSubjectGroup1').val();
+        var SubjectGroup2 = $('#inputSubjectGroup2').val();
+        //使用AJAX發Post請求
+        $.ajax({
+            type: "POST",
+            url: "/MaintenanceAccountingSubject/CreateSubject",
+            data: {
+                Subject_ID: SubjectID,
+                Subject_Name: SubjectName,
+                Subject_Group1: SubjectGroup1,
+                Subject_Group2: SubjectGroup2
+            },
+            //data就是從控制器返回的JSON數據
+            success: function (data) {
+                    console.log("會計科目新增成功：", data);
+                    //重新定向到會科Read
+                window.location.href = "/MaintenanceAccountingSubject/AccountingSubject";
+            },
+            error: function (error) {
+                //處理成功回應
+                console.log("會計科目新增失敗：", error);
+            },
+        });
+    }
+</script>

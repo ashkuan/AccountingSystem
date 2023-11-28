@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewBag.Title = "CreateVoucherDetail";
+}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+
+<h3>新增傳票明細</h3>
+<br />
+<button class="btn btn-outline-dark" onclick="addVoucherDetail()">
+    新增
+</button>
+<table class="table">
+    <thead>
+        <tr class="d-flex justify-content-around align-content-center">
+            <th scope="col">傳票編號</th>
+            <th scope="col">序</th>
+            <th scope="col">會計科目</th>
+            <th scope="col">科目名稱</th>
+            <th scope="col">摘要</th>
+            <th scope="col">借方金額</th>
+            <th scope="col">貸方金額</th>
+            <th scope="col">部門認列</th>
+            <th scope="col">產品認列</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="d-flex justify-content-between">
+            <th>
+                <label for="inputVDetailSn" class="invisible"></label>
+                <input type="text" id="inputVDetailSn" name="VDetail_Sn" class="form-control border-0" />
+            </th>
+            <th>
+                <label for="inputSubjectID" class="invisible"></label>
+                <input type="text" id="inputSubjectID" name="Subject_ID" class="form-control border-0" />
+            </th>
+            <th>
+                <label for="inputSubjectName" class="invisible"></label>
+                <input type="text" id="inputSubjectName" name="Subject_Name" class="form-control border-0" />
+            </th>
+            <th>
+                <label for="inputVoucherNote" class="invisible"></label>
+                <input type="text" id="inputVoucherNote" name="Voucher_Note" class="form-control border-0" />
+            </th>
+            <th>
+                <label for="inputDrCrAmount" class="invisible"></label>
+                <input type="text" id="inputDrCrAmount" name="DrCr_Amount" class="form-control border-0" />
+            </th>
+            <th>
+                <label for="inputDrCrAmount" class="invisible"></label>
+                <input type="text" id="inputDrCrAmount" name="DrCr_Amount" class="form-control border-0" />
+            </th>
+            <th>
+                <label for="inputDeptID" class="invisible"></label>
+                <input type="text" id="inputDeptID" name="Dept_ID" class="form-control border-0" />
+            </th>
+            <th>
+                <label for="inputProductID" class="invisible"></label>
+                <input type="text" id="inputProductID" name="Product_ID" class="form-control border-0" />
+            </th>
+        </tr>
+        
+    </tbody>
+</table>
+<script>
+    function addVoucherDetail() {
+        //取得輸入值
+        var VDetailSn = $('#inputVDetailSn').val();
+        var SubjectName = $('#inputSubjectName').val();
+        var VoucherNote = $('#inputVoucherNote').val();
+        var SubjectGroup2 = $('#inputSubjectGroup2').val();
+        //使用AJAX發Post請求
+        $.ajax({
+            type: "POST",
+            url: "/MaintenanceVoucherDetail/CreateVoucherDetail",
+            data: {
+                VDetail_Sn: VDetailSn,
+                Subject_ID: SubjectName,
+                Subject_Group1: SubjectGroup1,
+                Subject_Group2: SubjectGroup2
+            },
+            //data就是從控制器返回的JSON數據
+            success: function (data) {
+                console.log("傳票明細新增成功：", data);
+                //重新定向到明細Read
+                window.location.href = "/MaintenanceVoucherDetail/VoucherDetail";
+            },
+            error: function (error) {
+                //處理成功回應
+                console.log("傳票明細新增失敗：", error);
+            },
+        });
+    }
+</script>

@@ -1,0 +1,38 @@
+﻿@using AccountingSystem.Models;
+@{
+    List<Product> products = ViewBag.products;
+}
+<button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateProduct")'">
+    新增產品
+</button>
+<br />
+<br />
+<table class="table table-bordered">
+    <thead>
+        <tr class="table-dark">
+            <th class="col-sm-2">產品編碼</th>
+            <th class="col-sm-3">產品名稱</th>
+            <th class="col-sm-3"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (Product product in products)
+            {
+                <tr>
+                    <th class="col-sm-2">@product.Product_ID</th>
+                    <th class="col-sm-3">@product.Product_Name</th>
+                    <th class="col-sm-3">
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditProduct",new {Product_ID=product.Product_ID})'">
+                            編輯
+                        </button>
+                        |
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("DeleteProduct",new {Product_ID=product.Product_ID})'">
+                            刪除
+                        </button>
+                    </th>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

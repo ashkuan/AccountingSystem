@@ -1,0 +1,41 @@
+﻿@using AccountingSystem.Models;
+@{
+    List<Department> departments = ViewBag.departments;
+}
+<button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateDept")'">
+    新增部門
+</button>
+<br />
+<br />
+<table class="table table-bordered">
+    <thead>
+        <tr class="table-dark">
+            <th class="col-sm-2">部門代碼</th>
+            <th class="col-sm-3">部門名稱</th>
+            <th class="col-sm-3">公司辨識碼</th>
+            <th class="col-sm-3"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (Department department in departments)
+            {
+                <tr>
+                    <th class="col-sm-2">@department.Dept_ID</th>
+                    <th class="col-sm-3">@department.Dept_Name</th>
+                    <th class="col-sm-3">@department.Company_ID</th>
+                    <th class="col-sm-3">
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditDept",new {Dept_ID=department.Dept_ID})'">
+                            編輯
+                        </button>
+                        |
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("DeleteDept",new {Dept_ID=department.Dept_ID})'">
+                            刪除
+                        </button>
+                    </th>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+

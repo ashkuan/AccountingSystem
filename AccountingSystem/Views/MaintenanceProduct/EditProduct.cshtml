@@ -1,0 +1,21 @@
+﻿@model AccountingSystem.Models.Product
+<h2>修改產品</h2>
+<br />
+
+<form method="post" action="/MaintenanceProduct/EditProduct">
+    <div class="form-group row">
+        <label for="inputSubjectID" class="col-sm-2">產品編碼</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputProductID" name="Product_ID" class="form-control" value="@Model.Product_ID" readonly/>
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputProductName" class="col-sm-2">產品名稱</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputProductName" name="Product_Name" class="form-control" value="@Model.Product_Name" />
+        </div>
+    </div>
+    <br />
+    <input class="btn btn-outline-dark col-sm-1" type="submit" value="編輯" />
+</form>

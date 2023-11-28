@@ -1,0 +1,28 @@
+﻿@model AccountingSystem.Models.Department
+<h2>修改部門</h2>
+<br />
+
+<form method="post" action="/MaintenanceDepartment/EditDept">
+    <div class="form-group row">
+        <label for="inputDeptID" class="col-sm-2">部門代碼</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputDeptID" name="Dept_ID" class="form-control" value="@Model.Dept_ID" readonly />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputDeptName" class="col-sm-2">部門名稱</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputDeptName" name="Dept_Name" class="form-control" value="@Model.Dept_Name" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputCompanyID" class="col-sm-2">公司辨識碼</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputCompanyID" name="Company_ID" class="form-control" value="@Model.Company_ID" />
+        </div>
+    </div>
+    <br />
+    <input class="btn btn-outline-dark col-sm-1" type="submit" value="編輯" />
+</form>

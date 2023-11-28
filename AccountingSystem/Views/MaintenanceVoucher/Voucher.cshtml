@@ -1,0 +1,51 @@
+﻿@using AccountingSystem.Models;
+@{
+    List<Voucher> vouchers = ViewBag.vouchers;
+}
+<button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateVoucher")'">
+    新增傳票
+</button>
+
+<br />
+<br />
+<table class="table table-bordered">
+    <thead>
+        <tr class="table-dark">
+            <th class="col-sm-1">傳票編碼</th>
+            <th class="col-sm-2">傳票日期</th>
+            <th class="col-sm-1">傳票種類</th>
+            <th class="col-sm-1">傳票建立</th>
+            <th class="col-sm-1">傳票狀態</th>
+            <th class="col-sm-1">簽核者1</th>
+            <th class="col-sm-1">簽核者2</th>
+            <th class="col-sm-1">簽核者3</th>
+            <th class="col-sm-3"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (Voucher voucher in vouchers)
+            {
+                <tr>
+                    <th class="col-sm-1">@voucher.Voucher_ID</th>
+                    <th class="col-sm-2">@voucher.Voucher_Date.ToString("yyyy-MM-dd")</th>
+                    <th class="col-sm-1">@voucher.Voucher_Type</th>
+                    <th class="col-sm-1">@voucher.User_ID</th>
+                    <th class="col-sm-1">@voucher.Voucher_State</th>
+                    <th class="col-sm-1">@voucher.User_ID1</th>
+                    <th class="col-sm-1">@voucher.User_ID2</th>
+                    <th class="col-sm-1">@voucher.User_ID3</th>
+                    <th class="col-sm-3">
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditVoucher",new {Voucher_ID=voucher.Voucher_ID})'">
+                            編輯
+                        </button>
+                        |
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("DeleteVoucher",new {Voucher_ID=voucher.Voucher_ID})'">
+                            刪除
+                        </button>
+                    </th>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

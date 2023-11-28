@@ -1,0 +1,42 @@
+﻿@using AccountingSystem.Models;
+@{
+    List<AccountingSubject> accountingSubjects = ViewBag.accountingSubjects;
+}
+<button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateSubject")'">
+    新增會計科目
+</button>
+<br /><br />
+<table class="table table-bordered">
+    <thead>
+        <tr class="table-dark">
+            <th class="col-sm-2">會計科目編碼</th>
+            <th class="col-sm-3">會計科目</th>
+            <th class="col-sm-2">會計科目類別1</th>
+            <th class="col-sm-3">會計科目類別2</th>
+            <th class="col-sm-2"></th>
+        </tr>    
+    </thead>
+    <tbody>
+        @{
+            foreach (AccountingSubject accountingSubject in accountingSubjects)
+            {
+                <tr>
+                    <th class="col-sm-2">@accountingSubject.Subject_ID</th>
+                    <th class="col-sm-3">@accountingSubject.Subject_Name</th>
+                    <th class="col-sm-2">@accountingSubject.Subject_Group1</th>
+                    <th class="col-sm-3" >@accountingSubject.Subject_Group2</th>
+                    <th class="col-sm-2">
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditSubject",new {Subject_ID=accountingSubject.Subject_ID})'">
+                            編輯
+                        </button>
+                        |
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("DeleteSubject",new {Subject_ID=accountingSubject.Subject_ID})'">
+                            刪除
+                        </button>
+                    </th>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+

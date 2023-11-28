@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "CreateProduct";
+}
+<h2>新增產品</h2>
+<br />
+
+<form method="post" action="/MaintenanceProduct/CreateProduct">
+    <div class="form-group row">
+        <label for="inputProductID" class="col-sm-2">產品編碼</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputProductID" name="Product_ID" class="form-control" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputProductName" class="col-sm-2">產品名稱</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputProductName" name="Product_Name" class="form-control" />
+        </div>
+    </div>
+    <br />
+    <input class="btn btn-outline-dark" type="submit" value="新增" />
+</form>
+

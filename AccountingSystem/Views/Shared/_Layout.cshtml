@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 會計系統</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <script></script>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+        <div class="container">
+            @Html.ActionLink("會計系統", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li>@Html.ActionLink("會計傳票", "Voucher", "MaintenanceVoucher", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("會計科目", "AccountingSubject", "MaintenanceAccountingSubject", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("產品別", "Product", "MaintenanceProduct", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("部門別", "Department", "MaintenanceDepartment", new { area = "" }, new { @class = "nav-link" })</li>
+                    <!--<li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                維護
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                 <li class="dropdown-item" href="@Url.Action("AccountingSubject", "Maintenance")">會計科目</li>
+                 <li class="dropdown-item" href="@Url.Action("Product", "Maintenance")">產品別</li>
+                 <li class="dropdown-item" href="@Url.Action("Department", "Maintenance")">部門別</li>
+             </ul>
+    </li>-->
+                    <li>@Html.ActionLink("財務報表", "Statement", "Statement", new { area = "" }, new { @class = "nav-link" })</li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - 會計系統</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

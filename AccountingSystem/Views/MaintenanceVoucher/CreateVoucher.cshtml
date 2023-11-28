@@ -1,0 +1,41 @@
+﻿@{
+    ViewBag.Title = "CreateVoucher";
+}
+<h2>新增傳票</h2>
+<br />
+
+<form method="post" action="/MaintenanceVoucher/CreateVoucher">
+
+    <div class="form-group row">
+        <div class="col-4">
+            <label for="inputVoucherID">傳票編碼</label>
+            <div>
+                <input type="text" id="inputVoucherID" name="Voucher_ID" class="form-control" />
+            </div>
+        </div>
+        <div class="col-4">
+            <label for="inputVoucherDate">傳票日期</label>
+            <input type="date" id="inputVoucherDate" name="Voucher_Date" class="form-control" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row justify-content-between">
+        <div class="col">
+            <label for="inputVoucherType">傳票種類</label>
+            <input type="text" id="inputVoucherType" name="Voucher_Type" class="form-control" />
+        </div>
+        <div class="col">
+            <label for="inputUserID">傳票建立者</label>
+            <input type="text" id="inputUserID" name="User_ID" class="form-control" />
+        </div>
+        <div class="col">
+            <label for="inputVoucherState">傳票狀態</label>
+            <input type="text" id="inputVoucherState" name="Voucher_State" class="form-control" />
+        </div>
+    </div>
+    <br />
+    <br />
+   
+    <br />
+    <input class="btn btn-outline-dark" type="submit" value="新增" />
+</form>

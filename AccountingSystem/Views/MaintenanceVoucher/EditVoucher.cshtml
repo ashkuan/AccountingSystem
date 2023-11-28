@@ -1,0 +1,100 @@
+﻿@model AccountingSystem.Models.EditVoucherViewModel
+@using AccountingSystem.Models
+@{
+    Voucher voucher = Model.Voucher ?? new Voucher(); // 確保 voucher 不為 null
+    List<VoucherDetail> Details = Model.VoucherDetails ?? new List<VoucherDetail>(); // 確保 Details 不為 null
+}
+
+<h2>修改傳票</h2>
+<br />
+
+<form method="post" action="@Url.Action("EditVoucher","MaintenanceVoucher")">
+
+    <div>
+        <div class="form-group row">
+            <div class="col-md-3">
+                <label for="inputVoucherID" class="col-form-label">傳票編碼</label>
+                <input type="text" id="inputVoucherID" name="Voucher_ID" class="form-control" value="@voucher.Voucher_ID" readonly />
+            </div>
+            <div class="col-md-3">
+                <label for="inputVoucherDate" class="col-form-label">傳票日期</label>
+                <input type="date" id="inputVoucherDate" name="Voucher_Date" class="form-control" value="@voucher.Voucher_Date.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-3">
+                <label for="inputVoucherType" class="col-form-label">傳票種類</label>
+                <input type="text" id="inputVoucherType" name="Voucher_Type" class="form-control" value="@voucher.Voucher_Type" />
+            </div>
+        </div>
+        <br />
+        <div class="form-group row">
+            <div class="col-md-3">
+                <label for="inputUserID" class="col-form-label">傳票建立者</label>
+                <input type="text" id="inputUserID" name="User_ID" class="form-control" value="@voucher.User_ID" />
+            </div>
+            <div class="col-md-3">
+                <label for="inputVoucherState" class="col-form-label">傳票狀態</label>
+                <input type="text" id="inputVoucherState" name="Voucher_State" class="form-control" value="@voucher.Voucher_State" />
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col-sm-2">傳票編號</th>
+                <th class="col-sm">序</th>
+                <th class="col-sm-1">會計科目</th>
+                <th class="col-sm-1">借/貸</th>
+                <th class="col-sm-1">金額</th>
+                <th class="col-sm-1">部門認列</th>
+                <th class="col-sm-1">產品認列</th>
+                <th class="col-sm-2">摘要</th>
+                <th class="col-sm-2">
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Details.Count; i++)
+            {
+                <tr>
+                    <th class="col-sm-2">
+                        <input type="text" class="border-0 form-control form-control-sm" value="@Details[i].Voucher_ID" name="voucherDetail[@i].Voucher_ID" asp-for="Details[i].Voucher_ID" readonly>
+                    </th>
+                    <th class="col-sm">
+                        <input type="text" class="border-0 form-control form-control-sm" value="@Details[i].VDetail_Sn" name="voucherDetail[@i].VDetail_Sn" asp-for="Details[i].VDetail_Sn" />
+                    </th>
+                    <th class="col-sm-1">
+                        <input type="text" class="border-0 form-control form-control-sm" value="@Details[i].Subject_ID" name="voucherDetail[@i].Subject_ID" asp-for="Details[i].Subject_ID" />
+                    </th>
+                    <th class="col-sm-1">
+                        <input type="text" class="border-0 form-control form-control-sm" value="@Details[i].Subject_DrCr" name="voucherDetail[@i].Subject_DrCr" asp-for="Details[i].Subject_DrCr" />
+                    <th class="col-sm-1">
+                        <input type="text" class="border-0 form-control form-control-sm" value="@Details[i].DrCr_Amount" name="voucherDetail[@i].DrCr_Amount" asp-for="Details[i].DrCr_Amount" />
+                    </th>
+                    <th class="col-sm-1">
+                        <input type="text" class="border-0 form-control form-control-sm" value=" @Details[i].Dept_ID" name="voucherDetail[@i].Dept_ID" asp-for="Details[i].Dept_ID" />
+                    </th>
+                    <th class="col-sm-1">
+                        <input type="text" class="border-0 form-control form-control-sm" value=" @Details[i].Product_ID" name="voucherDetail[@i].Product_ID" asp-for="Details[i].Product_ID" />
+                    </th>
+                    <th class="col-sm-2">
+                        <input type="text" class="border-0 form-control form-control-sm" value=" @Details[i].Voucher_Note" name="voucherDetail[@i].Voucher_Note" asp-for="Details[i].Voucher_Note" />
+                    </th>
+                    <th class="col-sm-2">
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditVoucherDetail(@i)",new {Voucher_ID=voucher.Voucher_ID,VDetail_Sn=Model.VoucherDetails[i].VDetail_Sn})'">
+                            儲存
+                        </button>
+                        |
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("DeleteVoucherDetail(@i)",new {Voucher_ID=voucher.Voucher_ID,VDetail_Sn=Model.VoucherDetails[i].VDetail_Sn})'">
+                            刪除
+                        </button>
+                    </th>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+    <input class="btn btn-outline-dark col-sm-1" type="submit" value="編輯" />
+</form>

@@ -1,0 +1,66 @@
+﻿@model AccountingSystem.Models.VoucherDetail
+<h3>傳票明細</h3>
+<br />
+
+<form method="post" action="/MaintenanceVoucher/EditVoucherDetail">
+    <div class="form-group row">
+        <label for="inputVoucherID" class="col-sm-2">序號</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputVoucherID" name="Voucher_ID" class="form-control" value="@Model.Voucher_ID" readonly />
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="inputVDetailSn" class="col-sm-2">序號</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputVDetailSn" name="VDetail_Sn" class="form-control" value="@Model.VDetail_Sn" readonly />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputSubjectID" class="col-sm-2">會計科目</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputSubjectID" name="Subject_ID" class="form-control" value="@Model.Subject_ID" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputSubjectDrCr" class="col-sm-2">借/貸</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputSubjectDrCr" name="Subject_DrCr" class="form-control" value="@Model.Subject_DrCr" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputDrCrAmount" class="col-sm-2">金額</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputDrCrAmount" name="DrCr_Amount" class="form-control" value="@Model.DrCr_Amount" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputDeptID" class="col-sm-2">部門</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputDeptID" name="Dept_ID" class="form-control" value="@Model.Dept_ID" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputDeptID" class="col-sm-2">產品</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputProductID" name="Dept_ID" class="form-control" value="@Model.Dept_ID" />
+        </div>
+    </div>
+    <br />
+    <div class="form-group row">
+        <label for="inputVoucherNote" class="col-sm-2">摘要</label>
+        <div class="col-sm-6">
+            <input type="text" id="inputVoucherNote" name="Voucher_Note" class="form-control" value="@Model.Voucher_Note" />
+        </div>
+    </div>
+    <br />
+    <input class="btn btn-outline-dark col-sm-1" type="submit" value="儲存" />
+</form>
+
+
+
+
