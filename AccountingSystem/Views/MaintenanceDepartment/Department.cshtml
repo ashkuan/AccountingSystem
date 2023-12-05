@@ -12,7 +12,7 @@
         <tr class="table-dark">
             <th class="col-sm-2">部門代碼</th>
             <th class="col-sm-3">部門名稱</th>
-            <th class="col-sm-3">公司辨識碼</th>
+            <th class="col-sm-3">公司名稱</th>
             <th class="col-sm-3"></th>
         </tr>
     </thead>
@@ -23,7 +23,17 @@
                 <tr>
                     <th class="col-sm-2">@department.Dept_ID</th>
                     <th class="col-sm-3">@department.Dept_Name</th>
-                    <th class="col-sm-3">@department.Company_ID</th>
+                    <th class="col-sm-3">
+                        @switch (@department.Company_ID)
+                        {
+                            case 1:
+                                <text>和運租車股份有限公司</text>
+                                break;
+                            default:
+                                <text>未知</text>
+                                break;
+                        }
+                    </th>
                     <th class="col-sm-3">
                         <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditDept",new {Dept_ID=department.Dept_ID})'">
                             編輯

@@ -5,7 +5,7 @@
     {
         public int Subject_ID {get; set;}
         public string Subject_Name { get; set; }
-        public string Subject_Group1 { get; set; }
-        public string Subject_Group2 { get; set; }
+        public string Subject_MainGroup { get; set; }
+        public string Subject_SubGroup { get; set; }
     }
 }

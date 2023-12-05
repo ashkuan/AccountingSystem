@@ -1,12 +1,22 @@
-﻿@using AccountingSystem.Models;
+﻿@using AccountingSystem.Models
 @{
     List<Voucher> vouchers = ViewBag.vouchers;
 }
-<button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateVoucher")'">
-    新增傳票
-</button>
+<style>
 
-<br />
+</style>
+<table>
+   
+    <tr>
+        <th>
+            <button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateVoucher")'">
+                新增傳票
+            </button>
+        </th>
+        <th></th>
+        <th> @Html.ActionLink("新增傳票明細", "CreateVoucherDetail", new { }, new { @class = "btn btn-outline-dark" })</th>
+    </tr>
+</table>
 <br />
 <table class="table table-bordered">
     <thead>
@@ -16,10 +26,19 @@
             <th class="col-sm-1">傳票種類</th>
             <th class="col-sm-1">傳票建立</th>
             <th class="col-sm-1">傳票狀態</th>
-            <th class="col-sm-1">簽核者1</th>
-            <th class="col-sm-1">簽核者2</th>
-            <th class="col-sm-1">簽核者3</th>
-            <th class="col-sm-3"></th>
+            <th class="col-sm-1">
+                會計室長<br>
+                簽核
+            </th>
+            <th class="col-sm-1">
+                財務經理<br>
+                簽核
+            </th>
+            <th class="col-sm-1">
+                總經理<br>
+                簽核
+            </th>
+            <th class="col-sm-2"></th>
         </tr>
     </thead>
     <tbody>
@@ -30,14 +49,39 @@
                     <th class="col-sm-1">@voucher.Voucher_ID</th>
                     <th class="col-sm-2">@voucher.Voucher_Date.ToString("yyyy-MM-dd")</th>
                     <th class="col-sm-1">@voucher.Voucher_Type</th>
-                    <th class="col-sm-1">@voucher.User_ID</th>
-                    <th class="col-sm-1">@voucher.Voucher_State</th>
-                    <th class="col-sm-1">@voucher.User_ID1</th>
-                    <th class="col-sm-1">@voucher.User_ID2</th>
-                    <th class="col-sm-1">@voucher.User_ID3</th>
+                    <th class="col-sm-1">@voucher.Lister_Name</th>
+                    <th class="col-sm-1">
+                        @switch (@voucher.Voucher_State)
+                        {
+                        case 0:
+                        <text>建立</text>
+                        break;
+                        case 1:
+                        <text>簽核1</text>
+                        break;
+                        case 2:
+                        <text>簽核2</text>
+                        break;
+                        case 3:
+                        <text>簽核3</text>
+                        break;
+                        case 4:
+                        <text>正常</text>
+                        break;
+                        case 5:
+                        <text>作廢</text>
+                        break;
+                        default:
+                        <text>未知狀態</text>
+                        break;
+                        }
+                    </th>
+                    <th class="col-sm-1">@voucher.Checker_Name</th>
+                    <th class="col-sm-1">@voucher.Auditor_Name</th>
+                    <th class="col-sm-1">@voucher.Approver_Name</th>
                     <th class="col-sm-3">
                         <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditVoucher",new {Voucher_ID=voucher.Voucher_ID})'">
-                            編輯
+                            明細
                         </button>
                         |
                         <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("DeleteVoucher",new {Voucher_ID=voucher.Voucher_ID})'">

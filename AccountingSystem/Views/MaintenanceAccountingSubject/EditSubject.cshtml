@@ -21,16 +21,16 @@
     </div>
     <br />
     <div class="form-group row">
-        <label for="inputSubjectGroup1" class="col-sm-2">會計科目類別1</label>
+        <label for="inputSubjectMainGroup" class="col-sm-2">會計科目類別1</label>
         <div class="col-sm-6">
-            <input type="text" id="inputSubjectGroup1" name="Subject_Group1" class="form-control" value="@Model.Subject_Group1" />
+            <input type="text" id="inputSubjectMainGroup" name="Subject_MainGroup" class="form-control" value="@Model.Subject_MainGroup" />
         </div>
     </div>
     <br />
     <div class="form-group row">
-        <label for="inputSubjectGroup2" class="col-sm-2">會計科目類別2</label>
+        <label for="inputSubjectSubGroup" class="col-sm-2">會計科目類別2</label>
         <div class="col-sm-6">
-            <input type="text" id="inputSubjectGroup2" name="Subject_Group2" class="form-control" value="@Model.Subject_Group2" />
+            <input type="text" id="inputSubjectSubGroup" name="Subject_SubGroup" class="form-control" value="@Model.Subject_SubGroup" />
         </div>
     </div>
     <br />
@@ -38,7 +38,7 @@
 </form>
 <script>
     var SG1 = ['1XXX-資產', '2XXX-負債', '3XXX-權益', '4XXX-收入', '5XXX-支出'];
-    $('#inputSubjectGroup1').typeahead({ source: SG1 });
+    $('#inputSubjectMainGroup').typeahead({ source: SG1 });
     var SG2 = ['11-流動資產', '14-非流動資產', '21-流動負債', '25-非流動負債', '31-歸屬於母公司業主之權益', '4XXX-收入', '5XXX-支出', '6600-其他綜合損益', '6700-本期綜合損益', '6800- 淨利（淨損）歸屬', '6900-綜合損益總額歸屬', '7000-基本每股盈餘', '7100-完全稀釋每股盈餘'];
-    $('#inputSubjectGroup2').typeahead({ source: SG2 });
+    $('#inputSubjectSubGroup').typeahead({ source: SG2 });
 </script>

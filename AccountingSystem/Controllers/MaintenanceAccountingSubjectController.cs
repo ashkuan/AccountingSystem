@@ -30,8 +30,6 @@ namespace AccountingSystem.Controllers
             try
             {
                 dbmanager.CreateSubject(accountingSubject);
-
-
             }
             catch (Exception ex)
             {

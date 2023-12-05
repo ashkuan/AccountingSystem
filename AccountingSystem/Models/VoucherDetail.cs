@@ -1,4 +1,6 @@
-﻿namespace AccountingSystem.Models
+﻿using System.Collections.Generic;
+
+namespace AccountingSystem.Models
 {
     public class VoucherDetail
     {
@@ -10,5 +12,8 @@
         public string Dept_ID { get; set; }
         public byte Product_ID { get; set; }
         public string Voucher_Note { get; set; }
+        public string Subject_Name { get; set; }
+        public string Dept_Name { get; set; }
+        public string Product_Name { get; set; }
     }
 }

@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace AccountingSystem.Models
 {
-    public class EditVoucherViewModel
+    public class VoucherViewModel
     {
-        public Voucher Voucher { get; set; }
-        public List<VoucherDetail> VoucherDetails { get; set; }
+       public Voucher Voucher { get; set; }
+       public List<VoucherDetail> Details { get; set; }
     }
 }

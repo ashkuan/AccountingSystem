@@ -127,7 +127,6 @@
     <Compile Include="Controllers\MaintenanceDepartmentController.cs" />
     <Compile Include="Controllers\MaintenanceProductController.cs" />
     <Compile Include="Controllers\MaintenanceVoucherController.cs" />
-    <Compile Include="Controllers\StatementsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -135,11 +134,11 @@
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\DBmanager.cs" />
-    <Compile Include="Models\EditVoucherViewModel.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Voucher.cs" />
     <Compile Include="Models\VoucherDetail.cs" />
+    <Compile Include="Models\VoucherViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -200,20 +199,21 @@
     <Content Include="Views\MaintenanceDepartment\Department.cshtml" />
     <Content Include="Views\MaintenanceDepartment\EditDept.cshtml" />
     <Content Include="Views\MaintenanceDepartment\CreateDept.cshtml" />
-    <Content Include="Views\MaintenanceVoucherDetails\MaintenanceVoucherDetails.cshtml" />
     <Content Include="Views\MaintenanceVoucher\Voucher.cshtml" />
     <Content Include="Views\MaintenanceVoucher\EditVoucher.cshtml" />
     <Content Include="Views\MaintenanceVoucher\CreateVoucher.cshtml" />
-    <Content Include="Views\MaintenanceVoucherDetails\CreateVoucherDetail.cshtml" />
-    <Content Include="Views\MaintenanceVoucherDetails\VoucherDetail.cshtml" />
+    <Content Include="Views\MaintenanceVoucher\CreateVoucherDetail.cshtml" />
     <Content Include="Views\MaintenanceVoucher\EditVoucherDetail.cshtml" />
+    <Content Include="Views\MaintenanceVoucher\VoucherDetail.cshtml" />
+    <Content Include="Views\MaintenanceVoucher\EditmainVoucher.cshtml" />
+    <Content Include="Views\MaintenanceVoucher\VoucherD.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\EditVoucherViewModel\" />
     <Folder Include="Views\Login\" />
     <Folder Include="Views\Logout\" />
     <Folder Include="Views\Statements\" />
+    <Folder Include="Views\VoucherViewModel\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

@@ -23,27 +23,6 @@ namespace AccountingSystem.Controllers
     public class MaintenanceVoucherController : Controller
 
     {
-        public EditVoucherViewModel LoadEditVoucher(string Voucher_ID)
-        {
-            DBmanager dbmanager = new DBmanager();
-
-            // 1. 數據庫查詢
-            Voucher voucher = dbmanager.GetVoucherById(Voucher_ID);
-            List<VoucherDetail> details = dbmanager.GetVoucherDetails(Voucher_ID);
-
-            // 2. 建立ViewModel對象
-            EditVoucherViewModel model = new EditVoucherViewModel();
-
-            // 3. 赋值 
-            model.Voucher = voucher;
-            model.VoucherDetails = details;
-
-            // 4. 传递ViewModel对象
-            return model;
-
-        }
-
-
         // GET: MaintenanceVoucher
         //會計傳票CRUD
         public ActionResult Voucher()
@@ -51,7 +30,7 @@ namespace AccountingSystem.Controllers
             //實做物件
             DBmanager dbmanager = new DBmanager();
             //實現GetVouchers方法
-            List<Voucher> vouchers = dbmanager.GetVouchers();
+            List<Voucher> vouchers = dbmanager.GetVouchersWithUserName();
             ViewBag.Vouchers = vouchers;
             return View();
         }
@@ -73,59 +52,7 @@ namespace AccountingSystem.Controllers
             {
                 Console.WriteLine(ex.ToString());
             }
-            return RedirectToAction("Voucher");
-        }
-
-        public ActionResult EditVoucher(string Voucher_ID)
-        {
-            DBmanager dbmanager = new DBmanager();
-            var voucherViewModel = dbmanager.GetVoucherById(Voucher_ID);
-            List<VoucherDetail> details = dbmanager.GetVoucherDetailById();
-            var model = LoadEditVoucher(Voucher_ID);
-            return View("EditVoucher", model);
-        }
-
-        [HttpPost]
-        public ActionResult EditVoucher(Voucher voucher, List<VoucherDetail> voucherDetails)
-        {
-            DBmanager dbmanager = new DBmanager();
-            dbmanager.UpdateVoucher(voucher, voucherDetails);
-            return RedirectToAction("EditVoucher");
-        }
-
-        public ActionResult VoucherDetail(string Voucher_ID)
-        {
-            //實做物件
-            DBmanager dbmanager = new DBmanager();
-            //實現GetVouchers方法
-            List<VoucherDetail> voucherDetails = dbmanager.GetVoucherDetails(Voucher_ID);
-            ViewBag.VoucherDetails = voucherDetails;
-            return View();
-        }
-        public ActionResult EditVoucherDetail(string Voucher_ID)
-        {
-            //實做物件
-            DBmanager dbmanager = new DBmanager();
-            List<VoucherDetail> voucherDetails = dbmanager.GetVoucherDetails(Voucher_ID);
-            return View(voucherDetails);
-        }
-
-        [HttpPost]
-        public ActionResult EditVoucherDetail(VoucherDetail detail)
-        {
-            try
-            {
-                //實做物件
-                DBmanager dbmanager = new DBmanager();
-                dbmanager.UpdateVoucherDetail(detail);
-                return RedirectToAction("VoucherDetail");
-
-            }
-            catch (Exception ex)
-            {
-                
-                return Json(new { success = false, message = "更新失败：" + ex.Message });
-            }
+            return RedirectToAction("voucher");
         }
 
 
@@ -138,11 +65,62 @@ namespace AccountingSystem.Controllers
             return RedirectToAction("Voucher");
         }
 
+        public ActionResult VoucherDetail()
+        {
+            //實做物件
+            DBmanager dbmanager = new DBmanager();
+            VoucherDetail Details = dbmanager.GetVDetail();
+            ViewBag.VoucherDetails = Details;
+            return View(Details);
+        }
+
+        public ActionResult CreateVoucherDetail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult CreateVoucherDetail(VoucherDetail Details)
+        {
+            DBmanager dbmanager = new DBmanager();
+            try
+            {
+                dbmanager.NewVoucherDetail(Details);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return View("VoucherDetail");
+        }
+        public ActionResult EditVoucherDetail(string Voucher_ID, byte VDetail_Sn)
+        {
+            DBmanager dbmanager = new DBmanager();
+            VoucherDetail voucherDetail = dbmanager.GetVDetailById(Voucher_ID, VDetail_Sn);
+            return View(voucherDetail);
+        }
+
+        [HttpPost]
+        public ActionResult EditVoucherDetail(VoucherDetail voucherDetail)
+        {
+            DBmanager dbmanager = new DBmanager();
+            dbmanager.UpdateVoucherDetail(voucherDetail);
+            return RedirectToAction("EditVoucher", new { Voucher_ID = voucherDetail.Voucher_ID, VDetail_Sn = voucherDetail.VDetail_Sn });
+        }
+
         public ActionResult DeleteVoucherDetail(string Voucher_ID, byte VDetail_Sn)
         {
             DBmanager dbmanager = new DBmanager();
             dbmanager.DeleteVoucherDetailBySn(Voucher_ID, VDetail_Sn);
-            return RedirectToAction("EditVoucher");
+            return RedirectToAction("VoucherDetail");
+        }
+
+        public ActionResult EditVoucher(string Voucher_ID)
+        {
+            DBmanager dbmanager = new DBmanager();
+            var voucher = dbmanager.GetVoucherById(Voucher_ID);
+            voucher.Details = dbmanager.GetVoucherDetails(Voucher_ID);
+            return View(voucher);
         }
 
     }

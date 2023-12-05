@@ -8,10 +8,17 @@ namespace AccountingSystem.Models
         public string Voucher_ID { get; set; }
         public DateTime Voucher_Date { get; set; }
         public string Voucher_Type { get; set; }
-        public byte User_ID { get; set; }
+        public byte Lister_ID { get; set; }
         public byte Voucher_State { get; set; }
-        public byte User_ID1 { get; set; }
-        public byte User_ID2 { get; set; }
-        public byte User_ID3 { get; set; }
+        public byte Checker_ID { get; set; }
+        public byte Auditor_ID { get; set; }
+        public byte Approver_ID { get; set; }
+        public string Lister_Name { get; set; }
+        public string Checker_Name { get; set; }
+        public string Auditor_Name { get; set; }
+        public string Approver_Name { get; set; }
+        public decimal DebitTotal { get; set; }
+        public decimal CreditTotal { get; set; }
+        public List<VoucherDetail> Details { get; set; }
     }
 }
