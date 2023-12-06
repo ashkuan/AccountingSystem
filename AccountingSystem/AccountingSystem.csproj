@@ -204,7 +204,6 @@
     <Content Include="Views\MaintenanceVoucher\CreateVoucherDetail.cshtml" />
     <Content Include="Views\MaintenanceVoucher\EditVoucherDetail.cshtml" />
     <Content Include="Views\MaintenanceVoucher\VoucherDetail.cshtml" />
-    <Content Include="Views\MaintenanceVoucher\EditmainVoucher.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

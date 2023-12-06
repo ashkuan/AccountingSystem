@@ -399,16 +399,16 @@ namespace AccountingSystem.Models
             SqlConnection sqlConnection = new SqlConnection(ConnStr);
             SqlCommand sqlCommand = new SqlCommand(
                     @"INSERT INTO Voucher (Voucher_ID, Voucher_Date, Voucher_Type, Lister_ID, Voucher_State, Checker_ID, Auditor_ID, Approver_ID)
-                     VALUES (@Voucher_ID, @Voucher_Date, @Voucher_Type, @CLister_ID, @Voucher_State, 4, 3, 2);");
+                     VALUES (@Voucher_ID, @Voucher_Date, @Voucher_Type, @Lister_ID, @Voucher_State, 4, 3, 2);");
             sqlCommand.Connection = sqlConnection;
             sqlCommand.Parameters.Add(new SqlParameter("@Voucher_ID", voucher.Voucher_ID));
             sqlCommand.Parameters.Add(new SqlParameter("@Voucher_Date", voucher.Voucher_Date));
             sqlCommand.Parameters.Add(new SqlParameter("@Voucher_Type", voucher.Voucher_Type));
             sqlCommand.Parameters.Add(new SqlParameter("@Lister_ID", voucher.Lister_ID));
             sqlCommand.Parameters.Add(new SqlParameter("@Voucher_State", voucher.Voucher_State));
-            sqlCommand.Parameters.Add(new SqlParameter("@Checker_ID", voucher.Checker_ID));
-            sqlCommand.Parameters.Add(new SqlParameter("@Auditor_ID", voucher.Auditor_ID));
-            sqlCommand.Parameters.Add(new SqlParameter("@Approver_ID", voucher. Approver_ID));
+            sqlCommand.Parameters.Add(new SqlParameter("4", voucher.Checker_ID));
+            sqlCommand.Parameters.Add(new SqlParameter("3", voucher.Auditor_ID));
+            sqlCommand.Parameters.Add(new SqlParameter("2", voucher. Approver_ID));
             sqlConnection.Open();
             sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
