@@ -54,6 +54,21 @@ namespace AccountingSystem.Controllers
             }
             return RedirectToAction("voucher");
         }
+        public ActionResult EditVoucher(string Voucher_ID)
+        {
+            DBmanager dbmanager = new DBmanager();
+            Voucher voucher = dbmanager.GetVoucherById(Voucher_ID);
+            voucher.Details = dbmanager.GetVoucherDetails(Voucher_ID);
+            return View(voucher);
+        }
+
+        [HttpPost]
+        public ActionResult EditVoucher(Voucher Voucher)
+        {
+            DBmanager dbmanager = new DBmanager();
+            dbmanager.UpdateVoucher(Voucher);
+            return RedirectToAction("voucher");
+        }
 
 
 
@@ -114,15 +129,6 @@ namespace AccountingSystem.Controllers
             dbmanager.DeleteVoucherDetailBySn(Voucher_ID, VDetail_Sn);
             return RedirectToAction("VoucherDetail");
         }
-
-        public ActionResult EditVoucher(string Voucher_ID)
-        {
-            DBmanager dbmanager = new DBmanager();
-            var voucher = dbmanager.GetVoucherById(Voucher_ID);
-            voucher.Details = dbmanager.GetVoucherDetails(Voucher_ID);
-            return View(voucher);
-        }
-
     }
 
 }

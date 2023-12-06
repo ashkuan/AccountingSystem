@@ -58,7 +58,7 @@ namespace AccountingSystem.Models
         {
             SqlConnection sqlConnection = new SqlConnection(ConnStr);
             SqlCommand sqlCommand = new SqlCommand(
-                @"INSERT INTO AccountingSubject(Subject_ID, Subject_Name,Subject_Group1,Subject_Group2)
+                @"INSERT INTO AccountingSubject(Subject_ID, Subject_Name,Subject_MainGroup,Subject_SubGroup)
                   VALUES(@Subject_ID, @Subject_Name,@Subject_MainGroup,@Subject_SubGroup) ");
             sqlCommand.Connection = sqlConnection;
             sqlCommand.Parameters.Add(new SqlParameter("@Subject_ID", accountingSubject.Subject_ID));
@@ -343,7 +343,7 @@ namespace AccountingSystem.Models
         }
         #endregion
 
-        #region 傳票及傳票明細
+        #region 傳票
         //取得傳票資料表的所有資料 傳票JOIN使用者-要顯示名字
         public List<Voucher> GetVouchersWithUserName()
         {
@@ -469,7 +469,73 @@ namespace AccountingSystem.Models
             return voucher;
         }
 
-    
+        //編輯傳票
+        public void UpdateVoucher(Voucher voucher)
+        {
+            {
+                List<VoucherDetail> details = new List<VoucherDetail>();
+                //資料庫連線
+                SqlConnection sqlConnection = new SqlConnection(ConnStr);
+                sqlConnection.Open();
+
+                //更新傳票表
+                var updateVoucherSql = @"UPDATE Voucher 
+                        SET Voucher_Date=@Voucher_Date, Voucher_Type=@Voucher_Type, Lister_ID=@Lister_ID,Voucher_State=@Voucher_State,Checker_ID=4,Auditor_ID=3,Approver_ID=2
+                        WHERE Voucher_ID=@Voucher_ID";
+                SqlCommand sqlCommand = new SqlCommand(updateVoucherSql, sqlConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Voucher_ID", voucher.Voucher_ID));
+                sqlCommand.Parameters.Add(new SqlParameter("@Voucher_Date", voucher.Voucher_Date));
+                sqlCommand.Parameters.Add(new SqlParameter("@Voucher_Type", voucher.Voucher_Type));
+                sqlCommand.Parameters.Add(new SqlParameter("@Lister_ID", voucher.Lister_ID));
+                sqlCommand.Parameters.Add(new SqlParameter("@Voucher_State", voucher.Voucher_State));
+                sqlCommand.Parameters.Add(new SqlParameter("4", voucher.Checker_ID));
+                sqlCommand.Parameters.Add(new SqlParameter("3", voucher.Auditor_ID));
+                sqlCommand.Parameters.Add(new SqlParameter("2", voucher.Approver_ID));
+                sqlCommand.ExecuteNonQuery();
+
+                //循環更新傳票明細
+                foreach (var voucherDetail in details)
+                {
+                    SqlConnection sqlConnection2 = new SqlConnection(ConnStr);
+                    sqlConnection2.Open();
+                    string sqlSelect =
+                    @"SELECT VD.*, V.* FROM VoucherDetail VD 
+                            JOIN Voucher V ON VD.Voucher_ID = V.Voucher_ID
+                            WHERE V.Voucher_ID =@Voucher_ID";
+                    SqlCommand selectCmd = new SqlCommand(sqlSelect, sqlConnection2);
+                    selectCmd.Parameters.Add(new SqlParameter("@Voucher_ID", voucherDetail.Voucher_ID));
+                    var reader = selectCmd.ExecuteReader();
+                    string sqlUpdate = @"
+                            UPDATE VoucherDetail
+                            SET VDetail_Sn = @VDetail_Sn,
+                            Subject_ID = @Subject_ID,
+                            Subject_DrCr=@Subject_DrCr, 
+                            DrCr_Amount=@DrCr_Amount, 
+                            Dept_ID = @Dept_ID,
+                            Product_ID = @Product_ID, 
+                            Voucher_Note=@Voucher_Note
+                            WHERE VoucherDetail.Voucher_ID = @Voucher_ID 
+                            AND VoucherDetail.VDetail_Sn = @VDetail_Sn";
+                    SqlCommand updateCmd = new SqlCommand(sqlUpdate, sqlConnection);
+                    updateCmd.Parameters.Add(new SqlParameter("@Voucher_ID", voucherDetail.Voucher_ID));
+                    updateCmd.Parameters.Add(new SqlParameter("@VDetail_Sn", voucherDetail.VDetail_Sn));
+                    updateCmd.Parameters.Add(new SqlParameter("@Subject_ID", voucherDetail.Subject_ID));
+                    updateCmd.Parameters.Add(new SqlParameter("@Subject_DrCr", voucherDetail.Subject_DrCr));
+                    updateCmd.Parameters.Add(new SqlParameter("@DrCr_Amount", voucherDetail.DrCr_Amount));
+                    updateCmd.Parameters.Add(new SqlParameter("@Dept_ID", voucherDetail.Dept_ID));
+                    updateCmd.Parameters.Add(new SqlParameter("@Product_ID", voucherDetail.Product_ID));
+                    updateCmd.Parameters.Add(new SqlParameter("@Voucher_Note", voucherDetail.Voucher_Note));
+
+                    reader.Close();
+
+                    updateCmd.ExecuteNonQuery();
+
+                }
+                sqlCommand.Parameters.Clear();
+
+                sqlConnection.Close();
+            }
+        }
 
         //刪除傳票
         public void DeleteVoucherById(string Voucher_ID)

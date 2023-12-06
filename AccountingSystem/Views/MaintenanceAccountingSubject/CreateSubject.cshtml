@@ -31,9 +31,9 @@
 </div>
 <br />
 <div class="form-group row">
-    <label for="inputSubjectsubGroup" class="col-sm-2">會計科目子分類</label>
+    <label for="inputSubjectSubGroup" class="col-sm-2">會計科目子分類</label>
     <div class="col-sm-6">
-        <input type="text" id="inputSubjectsubGroup" class="form-control" />
+        <input type="text" id="inputSubjectSubGroup" class="form-control" />
     </div>
 </div>
 <br />
@@ -43,15 +43,15 @@
 
 <script>
     var SG1 = ['1XXX-資產', '2XXX-負債', '3XXX-權益', '4XXX-收入', '5XXX-支出'];
-    $('#inputSubjectGroup1').typeahead({ source: SG1 });
+    $('#inputSubjectMainGroup').typeahead({ source: SG1 });
     var SG2 = ['11-流動資產', '14-非流動資產', '21-流動負債', '25-非流動負債', '31-歸屬於母公司業主之權益', '4XXX-收入', '5XXX-支出', '6600-其他綜合損益', '6700-本期綜合損益', '6800- 淨利（淨損）歸屬', '6900-綜合損益總額歸屬', '7000-基本每股盈餘', '7100-完全稀釋每股盈餘'];
-    $('#inputSubjectGroup2').typeahead({ source: SG2 });
+    $('#inputSubjectSubGroup').typeahead({ source: SG2 });
     function addSubject() {
         //取得輸入值
         var SubjectID = $('#inputSubjectID').val();
         var SubjectName = $('#inputSubjectName').val();
-        var SubjectmainGroup = $('#inputSubjectMainGroup').val();
-        var SubjectsubGroup = $('#inputSubjectSubGroup').val();
+        var SubjectMainGroup = $('#inputSubjectMainGroup').val();
+        var SubjectSubGroup = $('#inputSubjectSubGroup').val();
         //使用AJAX發Post請求
         $.ajax({
             type: "POST",

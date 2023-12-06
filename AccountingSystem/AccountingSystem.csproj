@@ -138,7 +138,6 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Voucher.cs" />
     <Compile Include="Models\VoucherDetail.cs" />
-    <Compile Include="Models\VoucherViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -206,7 +205,6 @@
     <Content Include="Views\MaintenanceVoucher\EditVoucherDetail.cshtml" />
     <Content Include="Views\MaintenanceVoucher\VoucherDetail.cshtml" />
     <Content Include="Views\MaintenanceVoucher\EditmainVoucher.cshtml" />
-    <Content Include="Views\MaintenanceVoucher\VoucherD.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
