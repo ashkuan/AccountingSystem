@@ -64,7 +64,5 @@ namespace AccountingSystem.Controllers
             return RedirectToAction("Department");
         }
 
-
-
     }
 }

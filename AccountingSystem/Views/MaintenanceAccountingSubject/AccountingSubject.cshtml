@@ -5,8 +5,9 @@
 <button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateSubject")'">
     新增會計科目
 </button>
-<br /><br />
-<table class="table table-bordered">
+<br />
+<br />
+<table class="table table-bordered" id="subjectTable">
     <thead>
         <tr class="table-dark">
             <th class="col-sm-2">會計科目編碼</th>
@@ -14,7 +15,7 @@
             <th class="col-sm-2">會計科目主分類</th>
             <th class="col-sm-3">會計科目子分類</th>
             <th class="col-sm-2"></th>
-        </tr>    
+        </tr>
     </thead>
     <tbody>
         @{
@@ -24,7 +25,7 @@
                     <th class="col-sm-2">@accountingSubject.Subject_ID</th>
                     <th class="col-sm-3">@accountingSubject.Subject_Name</th>
                     <th class="col-sm-2">@accountingSubject.Subject_MainGroup</th>
-                    <th class="col-sm-3" >@accountingSubject.Subject_SubGroup</th>
+                    <th class="col-sm-3">@accountingSubject.Subject_SubGroup</th>
                     <th class="col-sm-2">
                         <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditSubject",new {Subject_ID=accountingSubject.Subject_ID})'">
                             編輯
@@ -39,4 +40,3 @@
         }
     </tbody>
 </table>
-

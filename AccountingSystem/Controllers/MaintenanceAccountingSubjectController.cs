@@ -18,6 +18,13 @@ namespace AccountingSystem.Controllers
             ViewBag.accountingSubjects = accountingSubjects;
             return View();
         }
+      
+        public ActionResult SubjectIndex()
+        {
+            DBmanager dbmanager = new DBmanager();
+            var subjects = dbmanager.GetAccountingSubjects();
+            return View(subjects);
+        }
 
         public ActionResult CreateSubject()
         {

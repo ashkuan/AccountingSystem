@@ -70,8 +70,6 @@ namespace AccountingSystem.Controllers
             return RedirectToAction("voucher");
         }
 
-
-
         public ActionResult DeleteVoucher(string Voucher_ID)
         {
             DBmanager dbmanager = new DBmanager();
