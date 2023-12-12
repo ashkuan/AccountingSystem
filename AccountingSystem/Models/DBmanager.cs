@@ -418,12 +418,10 @@ namespace AccountingSystem.Models
         public Voucher GetVoucherById(string Voucher_ID)
         {
             var voucher = new Voucher();
-            List<VoucherDetail> voucherDetails = new List<VoucherDetail>();
             SqlConnection sqlConnection = new SqlConnection(ConnStr);
             SqlCommand sqlCommand = new SqlCommand(
-                @"SELECT * FROM Voucher V 
-                JOIN VoucherDetail VD ON V.Voucher_ID = VD.Voucher_ID
-                WHERE V.Voucher_ID = @Voucher_ID");
+                @"SELECT * FROM Voucher
+                WHERE Voucher_ID = @Voucher_ID");
             sqlCommand.Connection = sqlConnection;
             sqlCommand.Parameters.Add(new SqlParameter("@Voucher_ID", Voucher_ID));
             sqlConnection.Open();
@@ -445,20 +443,6 @@ namespace AccountingSystem.Models
                         Approver_ID = reader.GetByte(reader.GetOrdinal("Approver_ID")),
                     };
                 }
-                while (reader.Read())
-                {
-                    var detail = new VoucherDetail();
-                    detail.Voucher_ID = voucher.Voucher_ID;
-                    voucherDetails.Add(detail);
-                    detail.Voucher_ID = reader.GetString(reader.GetOrdinal("Voucher_ID"));
-                    detail.VDetail_Sn = reader.GetByte(reader.GetOrdinal("VDetail_Sn"));
-                    detail.Subject_ID = reader.GetString(reader.GetOrdinal("Subject_ID"));
-                    detail.Subject_DrCr = reader.GetString(reader.GetOrdinal("Subject_DrCr"));
-                    detail.DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount"));
-                    detail.Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID"));
-                    detail.Product_ID = reader.GetByte(reader.GetOrdinal("Product_ID"));
-                    detail.Voucher_Note = reader.GetString(reader.GetOrdinal("Voucher_Note"));
-                }
             }
             else
             {
@@ -473,7 +457,6 @@ namespace AccountingSystem.Models
         public void UpdateVoucher(Voucher voucher)
         {
             {
-                List<VoucherDetail> details = new List<VoucherDetail>();
                 //資料庫連線
                 SqlConnection sqlConnection = new SqlConnection(ConnStr);
                 sqlConnection.Open();
@@ -492,45 +475,7 @@ namespace AccountingSystem.Models
                 sqlCommand.Parameters.Add(new SqlParameter("3", voucher.Auditor_ID));
                 sqlCommand.Parameters.Add(new SqlParameter("2", voucher.Approver_ID));
                 sqlCommand.ExecuteNonQuery();
-
-                //循環更新傳票明細
-                foreach (var voucherDetail in details)
-                {
-                    SqlConnection sqlConnection2 = new SqlConnection(ConnStr);
-                    sqlConnection2.Open();
-                    string sqlSelect =
-                    @"SELECT VD.*, V.* FROM VoucherDetail VD 
-                            JOIN Voucher V ON VD.Voucher_ID = V.Voucher_ID
-                            WHERE V.Voucher_ID =@Voucher_ID";
-                    SqlCommand selectCmd = new SqlCommand(sqlSelect, sqlConnection2);
-                    selectCmd.Parameters.Add(new SqlParameter("@Voucher_ID", voucherDetail.Voucher_ID));
-                    var reader = selectCmd.ExecuteReader();
-                    string sqlUpdate = @"
-                            UPDATE VoucherDetail
-                            SET VDetail_Sn = @VDetail_Sn,
-                            Subject_ID = @Subject_ID,
-                            Subject_DrCr=@Subject_DrCr, 
-                            DrCr_Amount=@DrCr_Amount, 
-                            Dept_ID = @Dept_ID,
-                            Product_ID = @Product_ID, 
-                            Voucher_Note=@Voucher_Note
-                            WHERE VoucherDetail.Voucher_ID = @Voucher_ID 
-                            AND VoucherDetail.VDetail_Sn = @VDetail_Sn";
-                    SqlCommand updateCmd = new SqlCommand(sqlUpdate, sqlConnection);
-                    updateCmd.Parameters.Add(new SqlParameter("@Voucher_ID", voucherDetail.Voucher_ID));
-                    updateCmd.Parameters.Add(new SqlParameter("@VDetail_Sn", voucherDetail.VDetail_Sn));
-                    updateCmd.Parameters.Add(new SqlParameter("@Subject_ID", voucherDetail.Subject_ID));
-                    updateCmd.Parameters.Add(new SqlParameter("@Subject_DrCr", voucherDetail.Subject_DrCr));
-                    updateCmd.Parameters.Add(new SqlParameter("@DrCr_Amount", voucherDetail.DrCr_Amount));
-                    updateCmd.Parameters.Add(new SqlParameter("@Dept_ID", voucherDetail.Dept_ID));
-                    updateCmd.Parameters.Add(new SqlParameter("@Product_ID", voucherDetail.Product_ID));
-                    updateCmd.Parameters.Add(new SqlParameter("@Voucher_Note", voucherDetail.Voucher_Note));
-
-                    reader.Close();
-
-                    updateCmd.ExecuteNonQuery();
-
-                }
+                
                 sqlCommand.Parameters.Clear();
 
                 sqlConnection.Close();
@@ -555,6 +500,7 @@ namespace AccountingSystem.Models
         public List<VoucherDetail> GetVoucherDetails(string Voucher_ID)
         {
             List<VoucherDetail> voucherDetails = new List<VoucherDetail>();
+            try { 
             string sql = @" SELECT VD.*,
             S.Subject_Name AS Subject_Name,
             D.Dept_Name AS Dept_Name,
@@ -568,9 +514,54 @@ namespace AccountingSystem.Models
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Voucher_ID", Voucher_ID);
+                        conn.Open();
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                VoucherDetail voucherDetail = new VoucherDetail()
+                                {
+                                    Voucher_ID = reader.GetString(reader.GetOrdinal("Voucher_ID")),
+                                    VDetail_Sn = reader.GetByte(reader.GetOrdinal("VDetail_Sn")),
+                                    Subject_ID = reader.GetString(reader.GetOrdinal("Subject_ID")),
+                                    Subject_DrCr = reader.GetString(reader.GetOrdinal("Subject_DrCr")),
+                                    DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount")),
+                                    Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
+                                    Product_ID = reader.GetByte(reader.GetOrdinal("Product_ID")),
+                                    Voucher_Note = reader.GetString(reader.GetOrdinal("Voucher_Note")),
+                                    Subject_Name = reader.GetString(reader.GetOrdinal("Subject_Name")),
+                                    Dept_Name = reader.GetString(reader.GetOrdinal("Dept_Name")),
+                                    Product_Name = reader.GetString(reader.GetOrdinal("Product_Name"))
+                                };
+                                voucherDetails.Add(voucherDetail);
+                            }
+                            reader.Close();
+                        }
+                    }
+                   
+                }
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+                return new List<VoucherDetail>();
+            }
+
+            return voucherDetails;
+        }
+
+        public List<VoucherDetail> GetVoucherDetails()
+        {
+            List<VoucherDetail> voucherDetails = new List<VoucherDetail>();
+            string sql = @" SELECT * FROM VoucherDetail";
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            {
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
-                    cmd.Parameters.AddWithValue("@Voucher_ID", Voucher_ID);
                     conn.Open();
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -586,10 +577,7 @@ namespace AccountingSystem.Models
                                 DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount")),
                                 Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
                                 Product_ID = reader.GetByte(reader.GetOrdinal("Product_ID")),
-                                Voucher_Note = reader.GetString(reader.GetOrdinal("Voucher_Note")),
-                                Subject_Name = reader.GetString(reader.GetOrdinal("Subject_Name")),
-                                Dept_Name = reader.GetString(reader.GetOrdinal("Dept_Name")),
-                                Product_Name= reader.GetString(reader.GetOrdinal("Product_Name"))
+                                Voucher_Note = reader.GetString(reader.GetOrdinal("Voucher_Note"))
                             };
                             voucherDetails.Add(voucherDetail);
                         }
@@ -601,6 +589,7 @@ namespace AccountingSystem.Models
 
             return voucherDetails;
         }
+
 
         //新增傳票明細
         public void NewVoucherDetail(VoucherDetail voucherDetail)

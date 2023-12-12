@@ -19,6 +19,5 @@ namespace AccountingSystem.Models
         public string Approver_Name { get; set; }
         public decimal DebitTotal { get; set; }
         public decimal CreditTotal { get; set; }
-        public List<VoucherDetail> Details { get; set; }
     }
 }

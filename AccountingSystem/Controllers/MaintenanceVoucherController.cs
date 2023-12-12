@@ -58,7 +58,11 @@ namespace AccountingSystem.Controllers
         {
             DBmanager dbmanager = new DBmanager();
             Voucher voucher = dbmanager.GetVoucherById(Voucher_ID);
-            voucher.Details = dbmanager.GetVoucherDetails(Voucher_ID);
+            List<VoucherDetail> voucherDetails = dbmanager.GetVoucherDetails(Voucher_ID);
+            if(voucherDetails!=null && voucherDetails.Count > 0)
+            {
+                ViewBag.voucherDetails = voucherDetails;
+            }
             return View(voucher);
         }
 
@@ -82,10 +86,11 @@ namespace AccountingSystem.Controllers
         {
             //實做物件
             DBmanager dbmanager = new DBmanager();
-            VoucherDetail Details = dbmanager.GetVDetail();
-            ViewBag.VoucherDetails = Details;
-            return View(Details);
+            VoucherDetail voucherDetails = dbmanager.GetVDetail();
+            ViewBag.VoucherDetails = voucherDetails;
+            return View(voucherDetails);
         }
+
 
         public ActionResult CreateVoucherDetail()
         {
@@ -93,18 +98,18 @@ namespace AccountingSystem.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateVoucherDetail(VoucherDetail Details)
+        public ActionResult CreateVoucherDetail(VoucherDetail voucherDetails)
         {
             DBmanager dbmanager = new DBmanager();
             try
             {
-                dbmanager.NewVoucherDetail(Details);
+                dbmanager.NewVoucherDetail(voucherDetails);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
-            return View("VoucherDetail");
+            return RedirectToAction("VoucherDetail");
         }
         public ActionResult EditVoucherDetail(string Voucher_ID, byte VDetail_Sn)
         {
@@ -125,7 +130,7 @@ namespace AccountingSystem.Controllers
         {
             DBmanager dbmanager = new DBmanager();
             dbmanager.DeleteVoucherDetailBySn(Voucher_ID, VDetail_Sn);
-            return RedirectToAction("VoucherDetail");
+            return RedirectToAction("EditVoucher");
         }
     }
 

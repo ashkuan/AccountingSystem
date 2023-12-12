@@ -1,12 +1,12 @@
-﻿@using AccountingSystem.Models
+﻿<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@using AccountingSystem.Models
 @{
     List<Voucher> vouchers = ViewBag.vouchers;
 }
 <style>
-
 </style>
 <table>
-   
+
     <tr>
         <th>
             <button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateVoucher")'">
@@ -53,38 +53,38 @@
                     <th class="col-sm-1">
                         @switch (@voucher.Voucher_State)
                         {
-                        case 0:
-                        <text>建立</text>
-                        break;
-                        case 1:
-                        <text>簽核1</text>
-                        break;
-                        case 2:
-                        <text>簽核2</text>
-                        break;
-                        case 3:
-                        <text>簽核3</text>
-                        break;
-                        case 4:
-                        <text>正常</text>
-                        break;
-                        case 5:
-                        <text>作廢</text>
-                        break;
-                        default:
-                        <text>未知狀態</text>
-                        break;
+                            case 0:
+                                <text>建立</text>
+                                break;
+                            case 1:
+                                <text>簽核1</text>
+                                break;
+                            case 2:
+                                <text>簽核2</text>
+                                break;
+                            case 3:
+                                <text>簽核3</text>
+                                break;
+                            case 4:
+                                <text>正常</text>
+                                break;
+                            case 5:
+                                <text>作廢</text>
+                                break;
+                            default:
+                                <text>未知狀態</text>
+                                break;
                         }
                     </th>
                     <th class="col-sm-1">@voucher.Checker_Name</th>
                     <th class="col-sm-1">@voucher.Auditor_Name</th>
                     <th class="col-sm-1">@voucher.Approver_Name</th>
                     <th class="col-sm-3">
-                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditVoucher",new {Voucher_ID=voucher.Voucher_ID})'">
+                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditVoucher", new { Voucher_ID = voucher.Voucher_ID })'">
                             明細
                         </button>
                         |
-                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("DeleteVoucher",new {Voucher_ID=voucher.Voucher_ID})'">
+                        <button class="btn btn-outline-dark btn-sm" onclick="if (confirm('確定要刪除該筆資料嗎?')) {location.href='@Url.Action("DeleteVoucher", new { Voucher_ID = voucher.Voucher_ID })'}">
                             刪除
                         </button>
                     </th>
@@ -93,3 +93,47 @@
         }
     </tbody>
 </table>
+<script>
+    console.log = (function () {
+        var orig = console.log;
+        return function () {
+            try {
+                var tmp = process.stdout;
+                process.stdout = process.stderr;
+                // get now
+                var now = new Date();
+                // format time
+                var now_formated = now.toFormat("YYYY-MM-DD HH24:MI:SS");
+                var strDate = '[' + now_formated + '] ';
+                if (Buffer.isBuffer(arguments[0])) {
+                    arguments[0] = strDate + arguments[0];
+                } else if (typeof arguments[0] !== 'object') {
+                    arguments[0] = strDate + arguments[0];
+                } else if (typeof arguments[0] === 'object') {
+                    arguments[0] = strDate + JSON.stringify(arguments[0]);
+                }
+                orig.apply(console, arguments);
+            } finally {
+                process.stdout = tmp;
+            }
+        };
+    })();
+
+    alert("我先");
+    console.log("皮卡丘");
+    setTimeout((() => console.log("Hello!")), 0);
+    Swal.fire({
+        title: '確定要刪除嗎?',
+        text: "刪除後無法復原!",
+        icon: 'warning',
+        showCancelButton: true,
+        reverseButtons: true,//把確認和取消按鈕的順序調換，使取消變成默認選中狀態
+        focusCancel: true //默認取消按鈕為焦點按鈕
+    }).then(
+        result => {
+            if (result.value) {
+                location.href = '@Url.Action("DeleteVoucher")';
+            }
+        }
+    )
+</script>

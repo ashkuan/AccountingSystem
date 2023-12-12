@@ -1,4 +1,10 @@
 ﻿@model AccountingSystem.Models.Voucher
+@using AccountingSystem.Models;
+@{
+    DBmanager dbmanager = new DBmanager();
+    var details = dbmanager.GetVoucherDetails(Model.Voucher_ID);
+}
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -61,7 +67,7 @@
             @{
                 int i = 0;
 
-                foreach (var detail in Model.Details)
+                foreach (var detail in details)
                 {
                     <tr>
 
@@ -105,28 +111,11 @@
             }
 
     </table>
-   
+
     <br />
     <br />
     <input class="btn btn-outline-dark col-sm-1" type="submit" value="編輯" />
     <br />
     <br />
 </form>
-<script>
-    @{
-        decimal debitTotal = 0;
-        decimal creditTotal = 0;
-    }
-    @foreach (var detail in Model.Details) {
-        // 計算程式碼
-        if(detail.Subject_DrCr == "借") {
-            debitTotal += detail.DrCr_Amount;
-        } else {
-            creditTotal += detail.DrCr_Amount;
-        }
-    }
 
-    // Update the text content of the spans directly with the calculated totals
-     $("#debitTotal").text(debitTotal);
-     $("#creditTotal").text(creditTotal);
-</script>
