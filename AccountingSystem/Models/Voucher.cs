@@ -5,7 +5,7 @@ namespace AccountingSystem.Models
 {
     public class Voucher
     {
-        public string Voucher_ID { get; set; }
+        public long Voucher_ID { get; set; }
         public DateTime Voucher_Date { get; set; }
         public string Voucher_Type { get; set; }
         public byte Lister_ID { get; set; }
@@ -17,7 +17,5 @@ namespace AccountingSystem.Models
         public string Checker_Name { get; set; }
         public string Auditor_Name { get; set; }
         public string Approver_Name { get; set; }
-        public decimal DebitTotal { get; set; }
-        public decimal CreditTotal { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Ajax.Utilities;
+﻿using AccountingSystem.Controllers;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -369,7 +370,7 @@ namespace AccountingSystem.Models
                 while (reader.Read())
                 {
                     Voucher voucher = new Voucher();
-                    voucher.Voucher_ID = reader.GetString(reader.GetOrdinal("Voucher_ID"));
+                    voucher.Voucher_ID = reader.GetInt64(reader.GetOrdinal("Voucher_ID"));
                     voucher.Voucher_Date = reader.GetDateTime(reader.GetOrdinal("Voucher_Date"));
                     voucher.Voucher_Type = reader.GetString(reader.GetOrdinal("Voucher_Type"));
                     voucher.Lister_ID = reader.GetByte(reader.GetOrdinal("Lister_ID"));
@@ -408,14 +409,14 @@ namespace AccountingSystem.Models
             sqlCommand.Parameters.Add(new SqlParameter("@Voucher_State", voucher.Voucher_State));
             sqlCommand.Parameters.Add(new SqlParameter("4", voucher.Checker_ID));
             sqlCommand.Parameters.Add(new SqlParameter("3", voucher.Auditor_ID));
-            sqlCommand.Parameters.Add(new SqlParameter("2", voucher. Approver_ID));
+            sqlCommand.Parameters.Add(new SqlParameter("2", voucher.Approver_ID));
             sqlConnection.Open();
             sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
         }
 
         //新增傳票後取得全部傳票DB資料
-        public Voucher GetVoucherById(string Voucher_ID)
+        public Voucher GetVoucherById(long Voucher_ID)
         {
             var voucher = new Voucher();
             SqlConnection sqlConnection = new SqlConnection(ConnStr);
@@ -433,7 +434,7 @@ namespace AccountingSystem.Models
                 {
                     voucher = new Voucher()
                     {
-                        Voucher_ID = reader.GetString(reader.GetOrdinal("Voucher_ID")),
+                        Voucher_ID = reader.GetInt64(reader.GetOrdinal("Voucher_ID")),
                         Voucher_Date = reader.GetDateTime(reader.GetOrdinal("Voucher_Date")),
                         Voucher_Type = reader.GetString(reader.GetOrdinal("Voucher_Type")),
                         Lister_ID = reader.GetByte(reader.GetOrdinal("Lister_ID")),
@@ -475,7 +476,7 @@ namespace AccountingSystem.Models
                 sqlCommand.Parameters.Add(new SqlParameter("3", voucher.Auditor_ID));
                 sqlCommand.Parameters.Add(new SqlParameter("2", voucher.Approver_ID));
                 sqlCommand.ExecuteNonQuery();
-                
+
                 sqlCommand.Parameters.Clear();
 
                 sqlConnection.Close();
@@ -483,7 +484,7 @@ namespace AccountingSystem.Models
         }
 
         //刪除傳票
-        public void DeleteVoucherById(string Voucher_ID)
+        public void DeleteVoucherById(long Voucher_ID)
         {
             SqlConnection sqlConnection = new SqlConnection(ConnStr);
             SqlCommand sqlCommand = new SqlCommand("DELETE FROM Voucher WHERE Voucher_ID=@Voucher_ID");
@@ -495,13 +496,79 @@ namespace AccountingSystem.Models
         }
         #endregion
 
+        public void ExecuteStoredProcedure(Controller controller, string procedureName, Dictionary<string, object> parameters)
+        {
+            // 資料庫連線
+            SqlConnection sqlConnection = new SqlConnection(ConnStr);
+
+            // 創建命令
+            SqlCommand sqlCommand = new SqlCommand(procedureName, sqlConnection);
+            sqlCommand.CommandType = CommandType.StoredProcedure;
+
+            // 遍歷參數賦值
+            foreach (var param in parameters)
+            {
+                sqlCommand.Parameters.AddWithValue(param.Key, param.Value);
+            }
+
+            try
+            {
+                // 開啟連線
+                sqlConnection.Open();
+
+                // 執行預存程序
+                sqlCommand.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                // 因為SP裡每個自定義錯誤都定義了一個獨立的ErrorCode狀態碼 對應錯誤訊息帶入ModelState
+                switch (ex.Number)
+                {
+                    case 51000:
+                        controller.ModelState.AddModelError("Error1", ex.Message);
+                        break;
+
+                    case 51001:
+                        controller.ModelState.AddModelError("Error2", ex.Message);
+                        break;
+
+                    case 51002:
+                        controller.ModelState.AddModelError("Error3", ex.Message);
+                        break;
+
+                    case 51003:
+                        controller.ModelState.AddModelError("Error4", ex.Message);
+                        break;
+
+                    case 51004:
+                        controller.ModelState.AddModelError("Error5", ex.Message);
+                        break;
+
+                    case 51005:
+                        controller.ModelState.AddModelError("Error6", ex.Message);
+                        break;
+
+                    case 51006:
+                        controller.ModelState.AddModelError("Error7", ex.Message);
+                        break;
+                }
+            }
+            finally
+            {
+                // 關閉連線
+                sqlConnection.Close();
+            }
+        }
+
+
         # region 傳票明細
         //取得傳票明細資料表所有資料
-        public List<VoucherDetail> GetVoucherDetails(string Voucher_ID)
+        public List<VoucherDetail> GetVoucherDetails(long Voucher_ID)
         {
             List<VoucherDetail> voucherDetails = new List<VoucherDetail>();
-            try { 
-            string sql = @" SELECT VD.*,
+            try
+            {
+                string sql = @" SELECT VD.*,
             S.Subject_Name AS Subject_Name,
             D.Dept_Name AS Dept_Name,
             P.Product_Name AS Product_Name
@@ -512,8 +579,8 @@ namespace AccountingSystem.Models
             WHERE VD.Voucher_ID = @Voucher_ID
             ORDER BY VD.VDetail_Sn";
 
-            using (SqlConnection conn = new SqlConnection(ConnStr))
-            {
+                using (SqlConnection conn = new SqlConnection(ConnStr))
+                {
                     using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@Voucher_ID", Voucher_ID);
@@ -525,9 +592,9 @@ namespace AccountingSystem.Models
                             {
                                 VoucherDetail voucherDetail = new VoucherDetail()
                                 {
-                                    Voucher_ID = reader.GetString(reader.GetOrdinal("Voucher_ID")),
+                                    Voucher_ID = reader.GetInt64(reader.GetOrdinal("Voucher_ID")),
                                     VDetail_Sn = reader.GetByte(reader.GetOrdinal("VDetail_Sn")),
-                                    Subject_ID = reader.GetString(reader.GetOrdinal("Subject_ID")),
+                                    Subject_ID = reader.GetInt32(reader.GetOrdinal("Subject_ID")),
                                     Subject_DrCr = reader.GetString(reader.GetOrdinal("Subject_DrCr")),
                                     DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount")),
                                     Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
@@ -542,9 +609,10 @@ namespace AccountingSystem.Models
                             reader.Close();
                         }
                     }
-                   
+
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
                 return new List<VoucherDetail>();
@@ -552,44 +620,6 @@ namespace AccountingSystem.Models
 
             return voucherDetails;
         }
-
-        public List<VoucherDetail> GetVoucherDetails()
-        {
-            List<VoucherDetail> voucherDetails = new List<VoucherDetail>();
-            string sql = @" SELECT * FROM VoucherDetail";
-
-            using (SqlConnection conn = new SqlConnection(ConnStr))
-            {
-                using (SqlCommand cmd = new SqlCommand(sql, conn))
-                {
-                    conn.Open();
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            VoucherDetail voucherDetail = new VoucherDetail()
-                            {
-                                Voucher_ID = reader.GetString(reader.GetOrdinal("Voucher_ID")),
-                                VDetail_Sn = reader.GetByte(reader.GetOrdinal("VDetail_Sn")),
-                                Subject_ID = reader.GetString(reader.GetOrdinal("Subject_ID")),
-                                Subject_DrCr = reader.GetString(reader.GetOrdinal("Subject_DrCr")),
-                                DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount")),
-                                Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
-                                Product_ID = reader.GetByte(reader.GetOrdinal("Product_ID")),
-                                Voucher_Note = reader.GetString(reader.GetOrdinal("Voucher_Note"))
-                            };
-                            voucherDetails.Add(voucherDetail);
-                        }
-                        reader.Close();
-                    }
-
-                }
-            }
-
-            return voucherDetails;
-        }
-
 
         //新增傳票明細
         public void NewVoucherDetail(VoucherDetail voucherDetail)
@@ -612,7 +642,7 @@ namespace AccountingSystem.Models
             sqlConnection.Close();
         }
 
-        public VoucherDetail GetVDetailById(string Voucher_ID, byte VDetail_Sn)
+        public VoucherDetail GetVDetailById(long Voucher_ID, byte VDetail_Sn)
         {
             VoucherDetail voucherDetail = new VoucherDetail();
             SqlConnection sqlConnection = new SqlConnection(ConnStr);
@@ -629,9 +659,9 @@ namespace AccountingSystem.Models
                 {
                     voucherDetail = new VoucherDetail
                     {
-                        Voucher_ID = reader.GetString(reader.GetOrdinal("Voucher_ID")),
+                        Voucher_ID = reader.GetInt64(reader.GetOrdinal("Voucher_ID")),
                         VDetail_Sn = reader.GetByte(reader.GetOrdinal("VDetail_Sn")),
-                        Subject_ID = reader.GetString(reader.GetOrdinal("Subject_ID")),
+                        Subject_ID = reader.GetInt32(reader.GetOrdinal("Subject_ID")),
                         Subject_DrCr = reader.GetString(reader.GetOrdinal("Subject_DrCr")),
                         DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount")),
                         Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
@@ -642,7 +672,7 @@ namespace AccountingSystem.Models
             }
             else
             {
-                voucherDetail.Subject_ID = "未找到該筆資料";
+                voucherDetail.Subject_DrCr = "未找到該筆資料";
             }
             sqlConnection.Close();
             return voucherDetail;
@@ -663,9 +693,9 @@ namespace AccountingSystem.Models
                 {
                     voucherDetail = new VoucherDetail
                     {
-                        Voucher_ID = reader.GetString(reader.GetOrdinal("Voucher_ID")),
+                        Voucher_ID = reader.GetInt64(reader.GetOrdinal("Voucher_ID")),
                         VDetail_Sn = reader.GetByte(reader.GetOrdinal("VDetail_Sn")),
-                        Subject_ID = reader.GetString(reader.GetOrdinal("Subject_ID")),
+                        Subject_ID = reader.GetInt32(reader.GetOrdinal("Subject_ID")),
                         Subject_DrCr = reader.GetString(reader.GetOrdinal("Subject_DrCr")),
                         DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount")),
                         Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
@@ -676,7 +706,7 @@ namespace AccountingSystem.Models
             }
             else
             {
-                voucherDetail.Subject_ID = "未找到該筆資料";
+                voucherDetail.Subject_DrCr = "未找到該筆資料";
             }
             sqlConnection.Close();
             return voucherDetail;
@@ -718,7 +748,7 @@ namespace AccountingSystem.Models
             }
         }
 
-        public void DeleteVoucherDetail(String Voucher_ID)
+        public void DeleteVoucherDetail(long Voucher_ID)
         {
             SqlConnection sqlConnection = new SqlConnection(ConnStr);
             SqlCommand sqlCommand = new SqlCommand("DELETE FROM VoucherDetail WHERE Voucher_ID=@Voucher_ID");
@@ -729,9 +759,8 @@ namespace AccountingSystem.Models
             sqlConnection.Close();
         }
 
-        [HttpPost]
         //刪除傳票明細
-        public void DeleteVoucherDetailBySn(String Voucher_ID, Byte VDetail_Sn)
+        public void DeleteVoucherDetailBySn(long Voucher_ID, Byte VDetail_Sn)
         {
             SqlConnection sqlConnection = new SqlConnection(ConnStr);
             SqlCommand sqlCommand = new SqlCommand("DELETE FROM VoucherDetail WHERE Voucher_ID=@Voucher_ID AND VDetail_Sn=@VDetail_Sn");
@@ -742,7 +771,6 @@ namespace AccountingSystem.Models
             sqlCommand.ExecuteNonQuery();
             sqlConnection.Close();
         }
-      
         #endregion
     }
 }

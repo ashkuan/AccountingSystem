@@ -3,11 +3,30 @@
 }
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <h3>新增傳票明細</h3>
 <br />
 
+
 <form method="post" action="/MaintenanceVoucher/CreateVoucherDetail">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <strong>錯誤：</strong> 請檢查以下問題：
+            <ul>
+                @foreach (var state in ViewData.ModelState.Values)
+                {
+                    foreach (var error in state.Errors)
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+    <br />
+    <br />
     <div class="form-group row">
         <label for="inputVoucherID" class="col-sm-2">傳票編號</label>
         <div class="col-sm-6">
@@ -66,3 +85,6 @@
     <br />
     <input class="btn btn-outline-dark" type="submit" value="新增" />
 </form>
+
+
+

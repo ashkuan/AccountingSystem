@@ -5,8 +5,8 @@
     var details = dbmanager.GetVoucherDetails(Model.Voucher_ID);
 }
 
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <h2>傳票明細異動</h2>
 <br />
@@ -66,7 +66,6 @@
         <tbody>
             @{
                 int i = 0;
-
                 foreach (var detail in details)
                 {
                     <tr>
@@ -101,21 +100,96 @@
                         <th class="col-sm-2">
                             @Html.ActionLink("編輯", "EditVoucherDetail", new { Voucher_ID = @Model.Voucher_ID, VDetail_Sn = @detail.VDetail_Sn }, new { @class = "btn btn-outline-dark btn-sm" })
                             |
-                            @Html.ActionLink("刪除", "DeleteVoucherDetail", new { Voucher_ID = @Model.Voucher_ID, VDetail_Sn = @detail.VDetail_Sn }, new { @class = "btn btn-outline-dark btn-sm" })
+                            @Html.ActionLink("刪除", "DeleteVoucherDetail", new { Voucher_ID = @Model.Voucher_ID, VDetail_Sn = @detail.VDetail_Sn }, new { @class = "btn btn-outline-dark btn-sm deleteLink" })
                         </th>
                     </tr>
                     i++;
+
                 }
 
 
             }
 
     </table>
+    <br />
+    <br />
+    <div class="row text-center">
+        <div id="debitTotal" class="col">借方合計:0</div>
+        <div id="creditTotal" class="col">貸方合計:0</div>
+        <div id="balance" class="col">借貸差額:0</div>
+    </div>
+    <br />
+    <br />
+    <input class="btn btn-outline-dark col-sm-1" type="submit" value="儲存" />
+    <br />
+    <br />
 
-    <br />
-    <br />
-    <input class="btn btn-outline-dark col-sm-1" type="submit" value="編輯" />
-    <br />
-    <br />
 </form>
+<script>
+    //定義details變數
+    var details =@Html.Raw(Json.Encode(details));
+    console.log(details);
+    let debitTotal = 0;
+    let creditTotal = 0;
+    
+
+    //借貸總計
+    function DrCr(detail) {
+        if (detail.Subject_DrCr === "借") {
+            debitTotal += detail.DrCr_Amount;
+        } else {
+            creditTotal += detail.DrCr_Amount;
+        }
+    }
+
+    details.forEach(function (detail) {
+        DrCr(detail);
+    });
+    var balance = Math.abs(debitTotal - creditTotal);
+    if (balance > 0) {
+        $("#balance").css("color", "red");
+    }
+
+    //提交form時如果有借貸差額 則警示
+    $("form").submit(function () {
+        if (balance > 0) {
+            alert("借貸不平衡!");
+            return false;
+        }
+    });
+
+    //更新借貸總計
+    function updateTotal() {
+        console.log("Updating totals...");
+        console.log("Debit Total: " + debitTotal);
+        console.log("Credit Total: " + creditTotal);
+        $("#debitTotal").text("借方合計：" + debitTotal);
+        $("#creditTotal").text("貸方合計：" + creditTotal);
+        $("#balance").text("借貸差額：" + balance);
+    }
+
+    //在循環外更新一次總計
+    updateTotal();
+   
+    $(".deleteLink").click(function (event) {
+        event.preventDefault();
+        confirmDelete(this);
+    });
+    //刪除警示
+    function confirmDelete(link) {
+        Swal.fire({
+            title: '確定要刪除嗎?',
+            text: "刪除後無法復原",
+            icon: 'warning',
+            showCancelButton: true,
+            reverseButtons: true,
+            focusCancel: true
+        }).then((result) => {
+            if (result.value) {
+                location.href = link.href;//轉到刪除頁面
+            }
+        });
+        return false; // 防止默認行為
+    }
+</script>
 

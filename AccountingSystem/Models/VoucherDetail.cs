@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AccountingSystem.Models
 {
     public class VoucherDetail
     {
-        public string Voucher_ID { get; set; }
+        public long Voucher_ID { get; set; }
         public byte VDetail_Sn { get; set; }
-        public string Subject_ID { get; set; }
+        public int Subject_ID { get; set; }
         public string Subject_DrCr { get; set; }
         public decimal DrCr_Amount { get; set; }
         public string Dept_ID { get; set; }
