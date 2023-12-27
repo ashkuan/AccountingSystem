@@ -1,90 +1,266 @@
 ﻿@{
     ViewBag.Title = "CreateVoucherDetail";
 }
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css" rel="stylesheet">
+<style>
+    .btn-equal-width {
+        width: 36px;
+    }
+</style>
 
 <h3>新增傳票明細</h3>
 <br />
 
 
-<form method="post" action="/MaintenanceVoucher/CreateVoucherDetail">
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="alert alert-danger">
-            <strong>錯誤：</strong> 請檢查以下問題：
-            <ul>
-                @foreach (var state in ViewData.ModelState.Values)
-                {
-                    foreach (var error in state.Errors)
-                    {
-                        <li>@error.ErrorMessage</li>
-                    }
-                }
-            </ul>
+<div class="form-container">
+    <form method="post" action="/MaintenanceVoucher/CreateVoucherDetail" id="VDform">
+        @if (!String.IsNullOrEmpty(ViewBag.ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                <strong>錯誤：</strong>
+                <br />
+                @Html.Raw(ViewBag.ErrorMessage.Replace(Environment.NewLine, "<br>"))
+            </div>
+        }
+        <br />
+        <div class="p-2">
+            <button type="button" class="btn btn-warning btn-outline-warning btn-equal-width" id="addRowBtn" style="color: #974a0b;">+</button>
+            <button type="button" class="btn btn-danger btn-outline-danger btn-equal-width" id="deleteRowBtn" style="color: #820e0e;">–</button>
         </div>
+        <br />
+        <div class="form-group">
+            <label for="inputVoucherID">傳票編號</label>
+            <input type="text" id="inputVoucherID" value="@ViewBag.Voucher_ID" name="Voucher_ID" class="form-control" readonly />
+        </div>
+        <br />
+        <table id="voucherDetailTable">
+            <thead>
+                <tr>
+                    @*<th><label for="inputVoucherID">傳票編號</label></th>*@
+                    <th><label for="inputVDetailSn">序號</label></th>
+                    <th><label for="inputSubjectID">會計科目</label></th>
+                    <th><label for="inputSubjectDrCr">借/貸</label></th>
+                    <th><label for="inputDrCrAmount">金額</label></th>
+                    <th><label for="inputDeptID">部門</label></th>
+                    <th><label for="inputProductID">產品</label></th>
+                    <th><label for="inputVoucherNote">摘要</label></th>
+                </tr>
+            </thead>
+            <tbody>
+                <datalist id = "DrCrList">
+                    <option value="借"></option>
+                    <option value="貸"></option>
+                </datalist >
+            </tbody>
+        </table>
+        <br />
+        <input id="submitBtn" class="btn btn-outline-dark" type="button" value="新增" />
+    </form>
+</div>
+<script>
+    //確保DOM已經載入後再執行程式碼
+    $(document).ready(function () {
+        addRow();
+    })
+
+    let index = 0;
+    function addRow() {
+        var newRow = $('<tr>').addClass('detail-row');
+        //name屬性綁定array格式 索引作區別 因為會影響後端存取 所以要這樣寫
+        newRow.append('<td><input type="text" name="voucherDetails[' + index + '].VDetail_Sn" class="form-control" autocomplete="off" required /></td>');
+        newRow.append('<td><input type="text" list="subjectsList' + index + '" id="Subject_Name' + index + '" name="voucherDetails[' + index + '].Subject_Name" class="form-control" autocomplete="off" required /></td>');
+        newRow.append('<td><input type="text" list="DrCrList" name="voucherDetails[' + index + '].Subject_DrCr" class="dr-cr form-control" autocomplete="off" required /></td>');
+        newRow.append('<td><input type="text" name="voucherDetails[' + index + '].DrCr_Amount" class="amount form-control" autocomplete="off" required /></td>');
+        newRow.append('<td><input type="text" list="DeptList" id="Dept_Name' + index + '" name="voucherDetails[' + index + '].Dept_Name" class="form-control" autocomplete="off" required /></td>');
+        newRow.append('<td><input type="text" list="ProductList" id="Product_Name' + index + '" name="voucherDetails[' + index + '].Product_Name" class="form-control" autocomplete="off" required /></td>');
+        newRow.append('<td><input type="text" name="voucherDetails[' + index + '].Voucher_Note" class="form-control" autocomplete="off" required /></td>');
+
+        newRow.appendTo('#voucherDetailTable tbody');
+
+        //為新添加的會計科目輸入框創建新的datalist並綁定輸入的event
+        var SubjectListID = 'subjectsList' + index;
+        //產出datalist:用jQuery創建一個新的<datalist> 並appendTo到body中
+        var SubjectList = $('<datalist id="' + SubjectListID + '"></datalist>').appendTo('body');
+        //為新增的ID為Subject_ID欄位設定list屬性
+        $('#Subject_Name' + index + '').attr('list', SubjectListID);
+        //為新增的ID為Subject_ID欄位input事件監聽 使用者一輸入就觸發這個函式
+        $('#Subject_Name' + index + '').on('focus', function () {
+            //呼叫function 傳入當前input元素跟datalist的ID 動態更新datalist的選項
+            updateSubjectDatalist($(this), SubjectListID);
+        })
+
+        var DeptListID = 'DeptList' + index;
+        var DeptList = $('<datalist id="' + DeptListID + '"></datalist>').appendTo('body');
+        $('#Dept_Name' + index + '').attr('list', DeptListID);
+        $('#Dept_Name' + index + '').on('focus', function () {
+            updateDeptDataList($(this), DeptListID);
+        });
+
+        var ProductListID = 'ProductList' + index;
+        var ProductList = $('<datalist id="' + ProductListID + '"></datalist>').appendTo('body');
+        $('#Product_Name' + index + '').attr('list', ProductListID);
+        $('#Product_Name' + index + '').on('focus', function () {
+            updateProductDataList($(this), ProductListID)
+        });
+
+        index++;
     }
-    <br />
-    <br />
-    <div class="form-group row">
-        <label for="inputVoucherID" class="col-sm-2">傳票編號</label>
-        <div class="col-sm-6">
-            <input type="text" id="inputVoucherID" name="Voucher_ID" class="form-control" required />
-        </div>
-    </div>
-    <br />
-    <div class="form-group row">
-        <label for="inputVDetailSn" class="col-sm-2">序號</label>
-        <div class="col-sm-6">
-            <input type="text" id="inputVDetailSn" name="VDetail_Sn" class="form-control" required />
-        </div>
-    </div>
-    <br />
-    <div class="form-group row">
-        <label for="inputSubjectID" class="col-sm-2">會計科目</label>
-        <div class="col-sm-6">
-            <input type="text" id="inputSubjectID" name="Subject_ID" class="form-control" required />
-        </div>
-    </div>
-    <br />
-    <div class="form-group row">
-        <label for="inputSubjectDrCr" class="col-sm-2">借/貸</label>
-        <div class="col-sm-6">
-            <input type="text" id="inputSubjectDrCr" name="Subject_DrCr" class="form-control" required />
-        </div>
-    </div>
-    <br />
-    <div class="form-group row">
-        <label for="inputDrCrAmount" class="col-sm-2">金額</label>
-        <div class="col-sm-6">
-            <input type="text" id="inputDrCrAmount" name="DrCr_Amount" class="form-control" required />
-        </div>
-    </div>
-    <br />
-    <div class="form-group row">
-        <label for="inputDeptID" class="col-sm-2">部門</label>
-        <div class="col-sm-6">
-            <input type="text" id="inputDeptID" name="Dept_ID" class="form-control" required />
-        </div>
-    </div>
-    <br />
-    <div class="form-group row">
-        <label for="inputProductID" class="col-sm-2">產品</label>
-        <div class="col-sm-6">
-            <input type="text" id="inputProductID" name="Product_ID" class="form-control" required />
-        </div>
-    </div>
-    <br />
-    <div class="form-group row">
-        <label for="inputVoucherNote" class="col-sm-2">摘要</label>
-        <div class="col-sm-6">
-            <input type="text" id="inputVoucherNote" name="Voucher_Note" class="form-control" required />
-        </div>
-    </div>
-    <br />
-    <input class="btn btn-outline-dark" type="submit" value="新增" />
-</form>
+
+    $("#addRowBtn").on("click", function () {
+        addRow();
+    });
+
+    //發送ajax請求來取得科目選項資料
+    function updateSubjectDatalist(inputElement, SubjectListID) {
+        var key = inputElement.val();
+        $.ajax({
+            url: '/MaintenanceVoucher/GetSubjects',
+            type: "GET",
+            dataType: "json",
+            data: {
+                key: key,
+                searchField:"IDOrName"
+            },
+            success: function (data) {
+                data.forEach(function (item) {
+                    $('<option>').val(item.value).text(item.label).appendTo('#' + SubjectListID);
+                });
+            }
+        })
+    }
+
+    function updateDeptDataList(inputElement, DeptListID) {
+        var key = inputElement.val();
+        $.ajax({
+            url: '/MaintenanceVoucher/GetDepts',
+            type: "GET",
+            dataType: "json",
+            data: {
+                key: key,
+                searchField:"IDOrName"
+            },
+            success: function (data) {
+                $('#' + DeptListID).empty();
+                data.forEach(function (item) {
+                    $('<option>').val(item.value).text(item.label).appendTo('#' + DeptListID);
+                });
+            }
+        })
+    }
+
+    function updateProductDataList(inputElement, ProductListID) {
+        var key = inputElement.val();
+        $.ajax({
+            url: '/MaintenanceVoucher/GetProducts',
+            type: "GET",
+            dataType: "json",
+            data: {
+                key: key,
+                searchField:"IDOrName"
+            },
+            success: function (data) {
+                $('#' + ProductListID).empty();
+                data.forEach(function (item){
+                    $('<option>').val(item.value).text(item.label).appendTo('#' + ProductListID);
+                });
+            }
+        })
+    }
+
+    $("#voucherDetailTable tbody").on("click", "tr", function () {
+        $(this).addClass("selected");
+    });
+
+    $("#voucherDetailTable tbody").on("dblclick", "tr", function () {
+        $(this).removeClass("selected");
+    });
+
+    $("#deleteRowBtn").click(function () {
+        Swal.fire({
+            title: '確定要刪除嗎?',
+            text: "刪除後無法復原",
+            icon: 'warning',
+            showCancelButton: true,
+            reverseButtons: true,
+            focusCancel: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $(".selected").remove();
+            }
+        });
+    });
+
+    
+
+    document.getElementById("submitBtn").addEventListener("click", function () {
+        //獲取所有必須填入的輸入框
+        var requiredInput = document.querySelectorAll('#VDform input[required]');
+
+        //檢查是否每個必須輸入的input都填寫了
+        var allFilled = true;
+        requiredInput.forEach(function (input) {
+            if (input.value === '') {
+                allFilled = false;
+            }
+        });
+
+        //如果所有必須輸入框都有填寫
+        if (allFilled) {
+            Swal.fire({
+                title: '是否確定新增?',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: "儲存",
+                denyButtonText: `不儲存`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // 用户确认新增，检查借贷平衡并提交表单
+                    checkBalanceAndSubmit();
+                } else if (result.isDenied) {
+                    Swal.fire("暫不儲存新增的傳票明細", "", "info");
+                }
+            });
+        } else {
+            //阻止表單默認提交
+            event.preventDefault();
+            Swal.fire({
+                title: "資料錯誤",
+                text: "請填寫完整",
+                icon: "error",
+                confirmButtonText:'確定'
+            })
+        }
+
+        function checkBalanceAndSubmit() {
+            var totalDebit = 0, totalCredit = 0;
+            var varcherDetails = document.querySelectorAll(".detail-row");
+            varcherDetails.forEach(function (detail) {
+                var DrCr = detail.querySelector(".dr-cr").value;
+                var amount = parseFloat(detail.querySelector(".amount").value);
+                if (DrCr === "借") {
+                    totalDebit += amount;
+                } else if (DrCr === "貸") {
+                    totalCredit += amount;
+                }
+            });
+
+            if (totalDebit !== totalCredit) {
+                Swal.fire({
+                    title: '借方和貸方金額不相等',
+                    text: '請確認借貸方金額',
+                    icon: 'error',
+                    showCloseButton: true,
+                    reverseButtons: true,
+                });
+            } else {
+                document.getElementById("VDform").submit();
+            }
+        }
+
+        
+    });
 
 
-
+</script>

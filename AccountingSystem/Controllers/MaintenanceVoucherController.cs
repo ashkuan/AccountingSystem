@@ -9,11 +9,10 @@ using System.Data.SqlClient;
 using System.Globalization;
 
 using System.Linq;
-
+using System.Text;
 using System.Web;
 using System.Web.ModelBinding;
 using System.Web.Mvc;
-
 using System.Web.Optimization;
 using System.Web.Services.Description;
 
@@ -24,7 +23,7 @@ namespace AccountingSystem.Controllers
 
     {
         DBmanager dbmanager;
-        public MaintenanceVoucherController() 
+        public MaintenanceVoucherController()
         {
             dbmanager = new DBmanager();
         }
@@ -97,78 +96,105 @@ namespace AccountingSystem.Controllers
         }
 
 
-        public ActionResult CreateVoucherDetail()
+        public ActionResult CreateVoucherDetail(long? Voucher_ID=null)
         {
+            if (Voucher_ID != null) {
+                ViewBag.Voucher_ID = Voucher_ID;
+                Session["Voucher_ID"] = Voucher_ID;
+            }
+
+            //初始化一條明細數據(前端新增需要)
+            ViewBag.InitialDetail = new VoucherDetail();
             return View();
         }
 
-        
-
-            private VoucherDetail GetVoucherDetailModel()
-            {
-                // 从Session或者其他地方获取模型
-                VoucherDetail model = new VoucherDetail();
-                return model;
-            }
-
         [HttpPost]
-        public ActionResult CreateVoucherDetail(VoucherDetail voucherDetail)
+        public ActionResult CreateVoucherDetail(List<VoucherDetail> voucherDetails)
         {
-            //定義參數
-            var parameters = new Dictionary<string, object>
-      {
-          {"Voucher_ID",voucherDetail.Voucher_ID },
-          {"VDetail_Sn",voucherDetail.VDetail_Sn },
-          {"Subject_ID",voucherDetail.Subject_ID},
-          {"Subject_DrCr",voucherDetail.Subject_DrCr},
-          {"DrCr_Amount",voucherDetail.DrCr_Amount},
-          {"Dept_ID",voucherDetail.Dept_ID},
-          {"Product_ID",voucherDetail.Product_ID},
-          {"Voucher_Note",voucherDetail.Voucher_Note},
-      };
-            try
-            {
-                //呼叫預存程序
-                dbmanager.ExecuteStoredProcedure(this, "InsertVoucherDetail", parameters);
-            }
-            catch (Exception ex)
-            {
-                //捕捉異常，將錯誤訊息加入 ModelState
-                ModelState.AddModelError("", ex.Message);
+            //全域變數來存所有錯誤行數
+            List<int> errorRows= new List<int>();
+            var Voucher_ID = (long)Session["Voucher_ID"];
+            ViewBag.Voucher_ID = Voucher_ID;
+            bool hasErrors = false;
+            List<string> errorMessagesList=new List<string>();
 
-                //將錯誤訊息存進ViewBag
-                ViewBag.ErrorMessage = ex.Message;
-
-                //返回錯誤View
-                return View(voucherDetail);
-            }
-            //檢查ModelState
-            if (!ModelState.IsValid)
+            for (int i= 0;i < voucherDetails.Count;i++)
             {
-                //定義字符串列表 用來儲存所有的錯誤訊息
-                var errorMessages = new List<string>();
-
-                //遍歷每個模型錯誤
-                foreach (var state in ViewData.ModelState.Values)
+                var detail = voucherDetails[i];
+                var subject = dbmanager.GetAccountingSubjects().
+                                        FirstOrDefault(s => s.Subject_Name == detail.Subject_Name);
+                if (subject != null)
                 {
-                    //獲取錯誤信息
-                    foreach (var error in state.Errors)
-                    {
-                        errorMessages.Add(error.ErrorMessage);
-                    }
+                    detail.Subject_ID = subject.Subject_ID;
                 }
 
-                //把錯誤訊息存到ViewBag
-                ViewBag.ErrorMessage = string.Join("<br>", errorMessages);
+                var dept = dbmanager.GetDept().
+                                        FirstOrDefault(s => s.Dept_Name == detail.Dept_Name);
+                if (dept != null)
+                {
+                    detail.Dept_ID = dept.Dept_ID;
+                }
+                                                                                                                   
+                var product=dbmanager.GetProducts().
+                                        FirstOrDefault(s => s.Product_Name == detail.Product_Name);
+                if (product != null)
+                {
+                    detail.Product_ID = product.Product_ID;
+                }
 
-                //返回原填寫頁面
-                return View("CreateVoucherDetail", voucherDetail);
+                //定義參數
+                var parameters = new Dictionary<string, object>
+                {
+                    {"Voucher_ID",Voucher_ID},
+                    {"VDetail_Sn",detail.VDetail_Sn },
+                    {"Subject_ID",detail.Subject_ID},
+                    {"Subject_DrCr",detail.Subject_DrCr},
+                    {"DrCr_Amount",detail.DrCr_Amount},
+                    {"Dept_ID",detail.Dept_ID},
+                    {"Product_ID",detail.Product_ID},
+                    {"Voucher_Note",detail.Voucher_Note},
+                };
+                try
+                {
+                    //呼叫預存程序
+                    dbmanager.ExecuteStoredProcedure(this, "InsertVoucherDetail", parameters);
+                }
+                catch (Exception ex)
+                {
+                    errorMessagesList.Add(ex.Message);
+                    //抓到錯誤，把錯誤行號添加到errorRows
+                    errorRows.Add(i+1);
+                    hasErrors = true;
+                }
             }
-            return RedirectToAction("EditVoucher", new { Voucher_ID = voucherDetail.Voucher_ID, VDetail_Sn = voucherDetail.VDetail_Sn });
+
+            StringBuilder errorMessages = new StringBuilder();
+            if (errorRows.Count == errorMessagesList.Count)
+            {
+                for (int i = 0; i < errorMessagesList.Count; i++)
+                {
+                    int row = errorRows[i];
+                    string message = errorMessagesList[i]; 
+                    errorMessages.AppendLine($"第 {row} 行錯誤: {message}");
+                }
+            }
+            else
+            {
+                errorMessages.AppendLine("錯誤訊息數量和行數不一致");
+            }
+
+            if (hasErrors)
+            {
+                ViewBag.ErrorMessage = errorMessages.ToString();
+                return View(voucherDetails);
+            }
+            else
+            {
+                TempData["success"] = true;
+                return RedirectToAction("EditVoucher", new { Voucher_ID = Voucher_ID });
+            }
+ 
         }
-
-
-
 
         public ActionResult EditVoucherDetail(long Voucher_ID, byte VDetail_Sn)
         {
@@ -196,6 +222,50 @@ namespace AccountingSystem.Controllers
             }
             return RedirectToAction("EditVoucher", new { Voucher_ID });
         }
+
+        public ActionResult GetSubjects(string key,string searchField)
+        {
+            DBmanager dbmanager = new DBmanager();
+            var subjects = dbmanager.GetAccountingSubjects(key, searchField);
+            var result=subjects
+            .Select(x =>new {
+               label = x.Subject_ID + " " + x.Subject_Name,//組合ID和名稱
+               value = x.Subject_Name
+            })
+            .ToArray();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetDepts(string key, string searchField)
+        {
+            DBmanager dbmanager = new DBmanager();
+            var departments = dbmanager.GetDept(key, searchField);
+            var result=departments
+            .Select(x =>
+            new {
+                label = x.Dept_ID+" "+x.Dept_Name,
+                value = x.Dept_Name
+            })
+            .ToArray();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetProducts(string key, string searchField)
+        {
+            DBmanager dbmanager = new DBmanager();
+            var products = dbmanager.GetProducts(key, searchField);
+            var result = products
+                .Select(x => new {
+                    label = x.Product_ID + " " + x.Product_Name, // 組合ID和名稱
+                    value = x.Product_Name
+                })
+                .ToArray();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
     }
 
 }

@@ -9,6 +9,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 
@@ -51,6 +52,80 @@ namespace AccountingSystem.Models
                 Console.WriteLine("資料庫為空!");
             }
             sqlConnection.Close();
+            return accountingSubjects;
+        }
+
+        //去判斷輸入的字串是不是數字
+        private bool IsDigitsOnly(string str)
+        {
+            foreach(char c in str)
+            {
+                //如果輸入字不在'0'到'9'之間
+                if(c<'0'||c>'9')
+                    //輸入字不是數字 返回false
+                    return false;
+            }
+            //字串中的所有字符都是數字，返回true
+            return true;
+        }
+        //提供新增傳票明細自動填充功能用
+        public List<AccountingSubject> GetAccountingSubjects(string key, string searchField)
+        {
+            List<AccountingSubject> accountingSubjects = new List<AccountingSubject>();
+            //連線資料庫
+            using (SqlConnection sqlConnection = new SqlConnection(ConnStr))
+            {
+                //建立命令
+                using (SqlCommand sqlCommand = new SqlCommand())
+                {
+                    //設立基本的select語句
+                    sqlCommand.CommandText = "SELECT * FROM AccountingSubject";
+
+                    //根據搜尋欄位加入where條件 參數化查詢可以避免SQL Injection
+                    if (searchField == "IDOrName")
+                    {
+                        //去判斷輸入的是數字還是非數字
+                        if (IsDigitsOnly(key))
+                        { 
+                            //根據ID或名稱模糊搜尋
+                            sqlCommand.CommandText += " WHERE Subject_ID LIKE @key";
+                            sqlCommand.Parameters.AddWithValue("@key",key + "%");
+                        }
+                        else
+                        {
+                            //包含非數字的輸入字，假裝使用者就是輸入Name
+                            sqlCommand.CommandText += " WHERE Subject_Name LIKE @key";
+                            sqlCommand.Parameters.AddWithValue("@key", "%" + key + "%");
+                        }
+                        
+                    }
+               
+                    sqlCommand.Connection = sqlConnection;
+                    sqlConnection.Open();
+
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                AccountingSubject accountingSubject = new AccountingSubject
+                                {
+                                    Subject_ID = reader.GetInt32(reader.GetOrdinal("Subject_ID")),
+                                    Subject_Name = reader.GetString(reader.GetOrdinal("Subject_Name")),
+                                };
+                                accountingSubjects.Add(accountingSubject);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("資料庫為空!"); 
+                        }
+                    }
+                }
+                sqlConnection.Close();
+            }
+            
             return accountingSubjects;
         }
 
@@ -166,6 +241,59 @@ namespace AccountingSystem.Models
             return products;
         }
 
+        //提供新增傳票明細自動填充功能用
+        public List<Product> GetProducts(string key, string searchField)
+        {
+            List<Product> products = new List<Product>();
+            using (SqlConnection sqlConnection = new SqlConnection(ConnStr))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand())
+                {
+                    sqlCommand.CommandText = "SELECT * FROM Product";
+
+                    if (searchField == "IDOrName")
+                    {
+                        sqlCommand.CommandText += " WHERE Product_ID LIKE @key OR Product_Name LIKE @key";
+                        sqlCommand.Parameters.AddWithValue("@key", "%" + key + "%");
+                    }
+                    else if (searchField == "ID")
+                    {
+                        sqlCommand.CommandText += " WHERE Product_ID = @key";
+                        sqlCommand.Parameters.AddWithValue("@key", key);
+                    }
+                    else if (searchField == "Name")
+                    {
+                        sqlCommand.CommandText += " WHERE Product_Name LIKE @key";
+                        sqlCommand.Parameters.AddWithValue("@key", "%" + key + "%");
+                    }
+
+                    sqlCommand.Connection = sqlConnection;
+                    sqlConnection.Open();
+
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                Product product = new Product
+                                {
+                                    Product_ID = reader.GetByte(reader.GetOrdinal("Product_ID")),
+                                    Product_Name = reader.GetString(reader.GetOrdinal("Product_Name")),
+                                };
+                                products.Add(product);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("資料庫為空!"); // Database is empty!
+                        }
+                    }
+                }
+            }
+            return products;
+        }
+
         //新增產品
         public void NewProduct(Product product)
         {
@@ -237,6 +365,71 @@ namespace AccountingSystem.Models
             sqlConnection.Close();
         }
         #endregion
+
+        private bool ContainesChinese(string input)
+        {
+            return Regex.IsMatch(input, "[u4e00-u9fff]");
+        }
+
+        //提供新增傳票明細自動填充功能用
+        public List<Department> GetDept(string key, string searchField)
+        {
+            List<Department> departments = new List<Department>();
+            //連線資料庫
+            using (SqlConnection sqlConnection = new SqlConnection(ConnStr))
+            {
+                //建立命令
+                using (SqlCommand sqlCommand = new SqlCommand())
+                {
+                    //設立基本的select語句
+                    sqlCommand.CommandText = "SELECT * FROM Department";
+
+                    //根據搜尋欄位加入where條件 參數化查詢可以避免SQL Injection
+                    if (searchField == "IDOrName")
+                    {
+                        //去判斷輸入的是數字還是非數字
+                        if (ContainesChinese(key))
+                        {
+                            //包含中文輸入字，假裝使用者就是輸入Name
+                            sqlCommand.CommandText += " WHERE Dept_Name LIKE @key";
+                            sqlCommand.Parameters.AddWithValue("@key", "%" + key + "%");
+                        }
+                        else
+                        {
+                            sqlCommand.CommandText += " WHERE Dept_ID LIKE @key";
+                            sqlCommand.Parameters.AddWithValue("@key", key + "%");
+                        }
+
+                    }
+
+                    sqlCommand.Connection = sqlConnection;
+                    sqlConnection.Open();
+
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                Department department = new Department
+                                {
+                                    Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
+                                    Dept_Name = reader.GetString(reader.GetOrdinal("Dept_Name")),
+                                };
+                                departments.Add(department);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("資料庫為空!");
+                        }
+                    }
+                }
+                sqlConnection.Close();
+            }
+
+            return departments;
+        }
 
         #region 部門別
         //取得部門資料表的所有資料
@@ -520,38 +713,9 @@ namespace AccountingSystem.Models
                 sqlCommand.ExecuteNonQuery();
             }
             catch (SqlException ex)
-            {
-                // 因為SP裡每個自定義錯誤都定義了一個獨立的ErrorCode狀態碼 對應錯誤訊息帶入ModelState
-                switch (ex.Number)
-                {
-                    case 51000:
-                        controller.ModelState.AddModelError("Error1", ex.Message);
-                        break;
-
-                    case 51001:
-                        controller.ModelState.AddModelError("Error2", ex.Message);
-                        break;
-
-                    case 51002:
-                        controller.ModelState.AddModelError("Error3", ex.Message);
-                        break;
-
-                    case 51003:
-                        controller.ModelState.AddModelError("Error4", ex.Message);
-                        break;
-
-                    case 51004:
-                        controller.ModelState.AddModelError("Error5", ex.Message);
-                        break;
-
-                    case 51005:
-                        controller.ModelState.AddModelError("Error6", ex.Message);
-                        break;
-
-                    case 51006:
-                        controller.ModelState.AddModelError("Error7", ex.Message);
-                        break;
-                }
+            {  
+                controller.ModelState.AddModelError("@ErroMsg", ex.Message);
+                throw;
             }
             finally
             {
@@ -568,7 +732,7 @@ namespace AccountingSystem.Models
             List<VoucherDetail> voucherDetails = new List<VoucherDetail>();
             try
             {
-                string sql = @" SELECT VD.*,
+            string sql = @" SELECT VD.*,
             S.Subject_Name AS Subject_Name,
             D.Dept_Name AS Dept_Name,
             P.Product_Name AS Product_Name
