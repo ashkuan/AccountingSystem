@@ -2,6 +2,8 @@
 @{
     List<AccountingSubject> accountingSubjects = ViewBag.accountingSubjects;
 }
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <button class="btn btn-outline-dark" onclick="location.href='@Url.Action("CreateSubject")'">
     新增會計科目
 </button>
@@ -27,16 +29,32 @@
                     <th class="col-sm-2">@accountingSubject.Subject_MainGroup</th>
                     <th class="col-sm-3">@accountingSubject.Subject_SubGroup</th>
                     <th class="col-sm-2">
-                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditSubject",new {Subject_ID=accountingSubject.Subject_ID})'">
-                            編輯
-                        </button>
+                        @Html.ActionLink("編輯", "EditSubject", new { Subject_ID = accountingSubject.Subject_ID }, new {@class= "btn btn-outline-dark btn-sm" })
                         |
-                        <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("DeleteSubject",new {Subject_ID=accountingSubject.Subject_ID})'">
-                            刪除
-                        </button>
+                        @Html.ActionLink("刪除", "DeleteSubject", new { Subject_ID = accountingSubject.Subject_ID }, new {@class= "btn btn-outline-dark btn-sm deleteLink" })
                     </th>
                 </tr>
             }
         }
     </tbody>
 </table>
+<script>
+    $(".deleteLink").click(function (event) {
+        event.preventDefault();
+        confirmDelete(this);
+    })
+    function confirmDelete(link) {
+        Swal.fire({
+            title: '確定要刪除嗎?',
+            text: "刪除後無法復原",
+            icon: 'warning',
+            showCancelButton: true,
+            reverseButtons: true,
+            focusCancel: true
+        }).then((result) => {
+            if (result.value) {
+                location.href = link.href;//轉到刪除頁面
+            }
+        });
+    }
+</script>

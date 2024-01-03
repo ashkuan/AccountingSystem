@@ -12,18 +12,34 @@
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
         <div class="container">
             @Html.ActionLink("會計系統", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-target=".navbar-collapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav">
                     <li>@Html.ActionLink("會計傳票", "Voucher", "MaintenanceVoucher", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("會計科目", "AccountingSubject", "MaintenanceAccountingSubject", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("產品別", "Product", "MaintenanceProduct", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("部門別", "Department", "MaintenanceDepartment", new { area = "" }, new { @class = "nav-link" })</li>
-
-                    <li>@Html.ActionLink("財務報表", "Statement", "Statement", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            財務報表
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="#">平時會計程序</a>
+                            <div class="dropdown-divider" href="#"></div>
+                            <a class="dropdown-item" href="@Url.Action("SearchVoucherDetails","FinancialReports")">日記帳</a>
+                            <a class="dropdown-item" href="@Url.Action("GeneralLedger","FinancialReports")">總分類帳</a>
+                            <a class="dropdown-item" href="#">試算表</a>
+                            <br/>
+                            <a class="dropdown-item" href="#">期末會計程序</a>
+                            <div class="dropdown-divider" href="#"></div>
+                            <a class="dropdown-item" href="#">資產負債表</a>
+                            <a class="dropdown-item" href="#">現金流量表</a>
+                            <a class="dropdown-item" href="#">綜合損益表</a>
+                            <a class="dropdown-item" href="#">權益變動表</a>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -37,7 +53,7 @@
     </div>
 
     @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

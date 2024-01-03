@@ -190,7 +190,6 @@ namespace AccountingSystem.Controllers
             }
             else
             {
-                TempData["success"] = true;
                 return RedirectToAction("EditVoucher", new { Voucher_ID = Voucher_ID });
             }
  

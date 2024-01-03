@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="Journal" targetNamespace="http://tempuri.org/Journal.xsd" xmlns:mstns="http://tempuri.org/Journal.xsd" xmlns="http://tempuri.org/Journal.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="Journal" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_UserDSName="Journal" msprop:Generator_DataSetName="Journal">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="VoucherReport" msprop:Generator_RowEvHandlerName="VoucherReportRowChangeEventHandler" msprop:Generator_RowDeletedName="VoucherReportRowDeleted" msprop:Generator_RowDeletingName="VoucherReportRowDeleting" msprop:Generator_RowEvArgName="VoucherReportRowChangeEvent" msprop:Generator_TablePropName="VoucherReport" msprop:Generator_RowChangedName="VoucherReportRowChanged" msprop:Generator_RowChangingName="VoucherReportRowChanging" msprop:Generator_TableClassName="VoucherReportDataTable" msprop:Generator_RowClassName="VoucherReportRow" msprop:Generator_TableVarName="tableVoucherReport" msprop:Generator_UserTableName="VoucherReport">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Voucher_ID" msprop:Generator_ColumnPropNameInRow="Voucher_ID" msprop:Generator_ColumnPropNameInTable="Voucher_IDColumn" msprop:Generator_ColumnVarNameInTable="columnVoucher_ID" msprop:Generator_UserColumnName="Voucher_ID" type="xs:long" minOccurs="0" />
+              <xs:element name="Voucher_Date" msprop:Generator_ColumnPropNameInRow="Voucher_Date" msprop:Generator_ColumnPropNameInTable="Voucher_DateColumn" msprop:Generator_ColumnVarNameInTable="columnVoucher_Date" msprop:Generator_UserColumnName="Voucher_Date" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Voucher_Type" msprop:Generator_ColumnPropNameInRow="Voucher_Type" msprop:Generator_ColumnPropNameInTable="Voucher_TypeColumn" msprop:Generator_ColumnVarNameInTable="columnVoucher_Type" msprop:Generator_UserColumnName="Voucher_Type" type="xs:string" minOccurs="0" />
+              <xs:element name="Lister_ID" msprop:Generator_ColumnPropNameInRow="Lister_ID" msprop:Generator_ColumnPropNameInTable="Lister_IDColumn" msprop:Generator_ColumnVarNameInTable="columnLister_ID" msprop:Generator_UserColumnName="Lister_ID" type="xs:unsignedByte" minOccurs="0" />
+              <xs:element name="Voucher_State" msprop:Generator_ColumnPropNameInRow="Voucher_State" msprop:Generator_ColumnPropNameInTable="Voucher_StateColumn" msprop:Generator_ColumnVarNameInTable="columnVoucher_State" msprop:Generator_UserColumnName="Voucher_State" type="xs:unsignedByte" minOccurs="0" />
+              <xs:element name="Checker_ID" msprop:Generator_ColumnPropNameInRow="Checker_ID" msprop:Generator_ColumnPropNameInTable="Checker_IDColumn" msprop:Generator_ColumnVarNameInTable="columnChecker_ID" msprop:Generator_UserColumnName="Checker_ID" type="xs:unsignedByte" minOccurs="0" />
+              <xs:element name="Auditor_ID" msprop:Generator_ColumnPropNameInRow="Auditor_ID" msprop:Generator_ColumnPropNameInTable="Auditor_IDColumn" msprop:Generator_ColumnVarNameInTable="columnAuditor_ID" msprop:Generator_UserColumnName="Auditor_ID" type="xs:unsignedByte" minOccurs="0" />
+              <xs:element name="Approver_ID" msprop:Generator_ColumnPropNameInRow="Approver_ID" msprop:Generator_ColumnPropNameInTable="Approver_IDColumn" msprop:Generator_ColumnVarNameInTable="columnApprover_ID" msprop:Generator_UserColumnName="Approver_ID" type="xs:unsignedByte" minOccurs="0" />
+              <xs:element name="VDetail_Sn" msprop:Generator_ColumnPropNameInRow="VDetail_Sn" msprop:Generator_ColumnPropNameInTable="VDetail_SnColumn" msprop:Generator_ColumnVarNameInTable="columnVDetail_Sn" msprop:Generator_UserColumnName="VDetail_Sn" type="xs:unsignedByte" minOccurs="0" />
+              <xs:element name="Subject_ID" msprop:Generator_ColumnPropNameInRow="Subject_ID" msprop:Generator_ColumnPropNameInTable="Subject_IDColumn" msprop:Generator_ColumnVarNameInTable="columnSubject_ID" msprop:Generator_UserColumnName="Subject_ID" type="xs:short" minOccurs="0" />
+              <xs:element name="Subject_DrCr" msprop:Generator_ColumnPropNameInRow="Subject_DrCr" msprop:Generator_ColumnPropNameInTable="Subject_DrCrColumn" msprop:Generator_ColumnVarNameInTable="columnSubject_DrCr" msprop:Generator_UserColumnName="Subject_DrCr" type="xs:string" minOccurs="0" />
+              <xs:element name="DrCr_Amount" msprop:Generator_ColumnPropNameInRow="DrCr_Amount" msprop:Generator_ColumnPropNameInTable="DrCr_AmountColumn" msprop:Generator_ColumnVarNameInTable="columnDrCr_Amount" msprop:Generator_UserColumnName="DrCr_Amount" type="xs:decimal" minOccurs="0" />
+              <xs:element name="Dept_ID" msprop:Generator_ColumnPropNameInRow="Dept_ID" msprop:Generator_ColumnPropNameInTable="Dept_IDColumn" msprop:Generator_ColumnVarNameInTable="columnDept_ID" msprop:Generator_UserColumnName="Dept_ID" type="xs:string" minOccurs="0" />
+              <xs:element name="Product_ID" msprop:Generator_ColumnPropNameInRow="Product_ID" msprop:Generator_ColumnPropNameInTable="Product_IDColumn" msprop:Generator_ColumnVarNameInTable="columnProduct_ID" msprop:Generator_UserColumnName="Product_ID" type="xs:unsignedByte" minOccurs="0" />
+              <xs:element name="Voucher_Note" msprop:Generator_ColumnPropNameInRow="Voucher_Note" msprop:Generator_ColumnPropNameInTable="Voucher_NoteColumn" msprop:Generator_ColumnVarNameInTable="columnVoucher_Note" msprop:Generator_UserColumnName="Voucher_Note" type="xs:string" minOccurs="0" />
+              <xs:element name="Subject_Name" msprop:Generator_ColumnPropNameInRow="Subject_Name" msprop:Generator_ColumnPropNameInTable="Subject_NameColumn" msprop:Generator_ColumnVarNameInTable="columnSubject_Name" msprop:Generator_UserColumnName="Subject_Name" type="xs:string" minOccurs="0" />
+              <xs:element name="Dept_Name" msprop:Generator_ColumnPropNameInRow="Dept_Name" msprop:Generator_ColumnPropNameInTable="Dept_NameColumn" msprop:Generator_ColumnVarNameInTable="columnDept_Name" msprop:Generator_UserColumnName="Dept_Name" type="xs:string" minOccurs="0" />
+              <xs:element name="Product_Name" msprop:Generator_ColumnPropNameInRow="Product_Name" msprop:Generator_ColumnPropNameInTable="Product_NameColumn" msprop:Generator_ColumnVarNameInTable="columnProduct_Name" msprop:Generator_UserColumnName="Product_Name" type="xs:string" minOccurs="0" />
+              <xs:element name="Lister_Name" msprop:Generator_ColumnPropNameInRow="Lister_Name" msprop:Generator_ColumnPropNameInTable="Lister_NameColumn" msprop:Generator_ColumnVarNameInTable="columnLister_Name" msprop:Generator_UserColumnName="Lister_Name" type="xs:string" minOccurs="0" />
+              <xs:element name="Checker_Name" msprop:Generator_ColumnPropNameInRow="Checker_Name" msprop:Generator_ColumnPropNameInTable="Checker_NameColumn" msprop:Generator_ColumnVarNameInTable="columnChecker_Name" msprop:Generator_UserColumnName="Checker_Name" type="xs:string" minOccurs="0" />
+              <xs:element name="Auditor_Name" msprop:Generator_ColumnPropNameInRow="Auditor_Name" msprop:Generator_ColumnPropNameInTable="Auditor_NameColumn" msprop:Generator_ColumnVarNameInTable="columnAuditor_Name" msprop:Generator_UserColumnName="Auditor_Name" type="xs:string" minOccurs="0" />
+              <xs:element name="Approver_Name" msprop:Generator_ColumnPropNameInRow="Approver_Name" msprop:Generator_ColumnPropNameInTable="Approver_NameColumn" msprop:Generator_ColumnVarNameInTable="columnApprover_Name" msprop:Generator_UserColumnName="Approver_Name" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
