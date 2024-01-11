@@ -3,6 +3,7 @@
     ViewBag.Title = "日記帳";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
 <h2>@ViewBag.Title</h2>
 @if (TempData["ErrorMessage"] != null)
@@ -10,7 +11,7 @@
     <div class="alert alert-danger">
         @TempData["ErrorMessage"]
     </div>
-    <br/>
+    <br />
 }
 @using (Html.BeginForm("SearchVoucherDetails", "FinancialReports", FormMethod.Post))
 {
@@ -28,7 +29,18 @@
     <button type="submit" class="btn btn-outline-dark">搜尋</button>
     <br />
 }
-
+@if (ViewBag.selectedStartDate!=null||ViewBag.selectedEndDate!=null)
+{
+    <br />
+    <div class="alert alert-info">
+        <strong>查詢條件：</strong>
+        <br />
+        起始日期：@ViewBag.selectedStartDate.ToString("yyyy/MM/dd")
+        <br />
+        截止日期：@ViewBag.selectedEndDate.ToString("yyyy/MM/dd")
+        <br />
+    </div>
+}
 @* Model不為空且至少包含一個元素 *@
 @if (Model != null && Model.Any())
 {
@@ -64,6 +76,30 @@
             }
         </tbody>
     </table>
+    
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col-sm-2">傳票日期</th>
+                <th class="col-sm-1 text-center">類別</th>
+                <th class="col-sm-1 text-center">傳票編號</th>
+                <th class="col-sm-1 text-center">科目編號</th>
+                <th class="col-sm-2 text-center">會計科目</th>
+                <th class="col-sm-2 text-center">摘要</th>
+                <th class="col-sm-1">認列部門</th>
+                <th class="col-sm-1">借貸方向</th>
+                <th class="align-text-bottom text-center">金額</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="10" class="fs-4 text-center">查無資料。</td>
+            </tr>
+        </tbody>
+    </table>
 }
 
 @using (Html.BeginForm("GenerateVoucherReport", "FinancialReports", FormMethod.Get))
@@ -74,3 +110,24 @@
     <button type="submit" class="btn btn-outline-dark">下載報表(PDF)</button>
 }
 
+<script>
+    function validateDates() {
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+
+        if (startDate && endDate && startDate > endDate) {
+            alert('起始日期不能晚於截止日期!');
+            //阻止表單提交
+            return false;
+        }
+        //允許表單提交
+        return true;
+    }
+
+    //綁定validateDates函數到表單提交事件
+    $('form').submit(function (event) {
+        if (!validateDates()) {
+            event.preventDefault();
+        }
+    })
+</script>

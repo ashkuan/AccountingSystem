@@ -1,12 +1,12 @@
 ﻿using AccountingSystem.Controllers;
 using Microsoft.Ajax.Utilities;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 using System.Data;
 using System.Data.Common;
-//要用SqlConnection
-using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
@@ -18,7 +18,7 @@ namespace AccountingSystem.Models
     //連資料庫用
     public class DBmanager
     {
-        private readonly string ConnStr = "Data Source=X-HLCIT01-20;Initial Catalog=AccountSystem;Integrated Security=True";
+        private readonly string ConnStr = "Data Source=X-HLCIT01-20;Initial Catalog=AccountSystem;Integrated Security=True;TrustServerCertificate=True;";
         #region 會計科目
         //取得會計科目資料表的所有資料
         public List<AccountingSubject> GetAccountingSubjects()
@@ -68,6 +68,7 @@ namespace AccountingSystem.Models
             //字串中的所有字符都是數字，返回true
             return true;
         }
+
         //提供新增傳票明細自動填充功能用
         public List<AccountingSubject> GetAccountingSubjects(string key, string searchField)
         {
@@ -806,9 +807,9 @@ namespace AccountingSystem.Models
                 INNER JOIN Department D ON VD.Dept_ID=D.Dept_ID
                 INNER JOIN Product P ON VD.Product_ID=P.Product_ID
                 INNER JOIN [User] U1 ON V.Lister_ID = U1.User_Id
-                 INNER JOIN [User] U2 ON V.Checker_ID = U2.User_Id
-                 INNER JOIN [User] U3 ON V.Auditor_ID = U3.User_Id
-                 INNER JOIN [User] U4 ON V.Approver_ID = U4.User_Id  
+                INNER JOIN [User] U2 ON V.Checker_ID = U2.User_Id
+                INNER JOIN [User] U3 ON V.Auditor_ID = U3.User_Id
+                INNER JOIN [User] U4 ON V.Approver_ID = U4.User_Id  
                 ORDER BY V.Voucher_ID,VD.VDetail_Sn
                 ";
 
@@ -931,6 +932,241 @@ namespace AccountingSystem.Models
 
             return reportDataList;
         }
+
+        //根據部門名稱獲取部門ID
+        public string GetDeptIdByName(string deptName)
+        {
+            if (string.IsNullOrEmpty(deptName))
+            {
+                return null;
+            }
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            {
+                string query = "SELECT Dept_ID FROM Department WHERE Dept_Name=@deptName";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@deptName", deptName);
+                    conn.Open();
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        return Convert.ToString(result);
+                    }
+                }
+            }
+            return null;
+        }
+
+        //根據會計科目名稱獲取會計科目ID
+        public int? GetSubjectIdByName(string subjectName)
+        {
+            if (string.IsNullOrEmpty(subjectName))
+            {
+                return null;
+            }
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            {
+                string query = "SELECT Subject_ID FROM AccountingSubject WHERE Subject_Name=@subjectName";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@subjectName", subjectName);
+                    conn.Open();
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        return Convert.ToInt32(result);
+                    }
+                }
+            }
+            return null;
+        }
+
+        public List<VoucherReportViewModel> GetVDinLedgerReports()
+        {
+            List<VoucherReportViewModel> reportDataList = new List<VoucherReportViewModel>();
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            {
+                string query = @"
+                SELECT VD.*,V.*,
+                S.Subject_Name AS Subject_Name,
+                D.Dept_Name AS Dept_Name,
+                P.Product_Name AS Product_Name,
+                U1.User_Name AS Lister_Name,
+                U2.User_Name AS Checker_Name,
+                U3.User_Name AS Auditor_Name,
+                U4.User_Name AS Approver_Name
+                FROM VoucherDetail VD
+                INNER JOIN Voucher V ON VD.Voucher_ID=V.Voucher_ID
+                INNER JOIN AccountingSubject S ON VD.Subject_ID=S.Subject_ID
+                INNER JOIN Department D ON VD.Dept_ID=D.Dept_ID
+                INNER JOIN Product P ON VD.Product_ID=P.Product_ID
+                INNER JOIN [User] U1 ON V.Lister_ID = U1.User_Id
+                INNER JOIN [User] U2 ON V.Checker_ID = U2.User_Id
+                INNER JOIN [User] U3 ON V.Auditor_ID = U3.User_Id
+                INNER JOIN [User] U4 ON V.Approver_ID = U4.User_Id  
+                ORDER BY VD.Subject_ID,V.Voucher_ID,VD.VDetail_Sn
+                ";
+
+                using (SqlCommand sqlCommand = new SqlCommand(query, conn))
+                {
+                    conn.Open();
+
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            VoucherReportViewModel reportItem = new VoucherReportViewModel
+                            {
+                                //填充VoucherReportViewModel中的屬性
+                                Voucher_ID = reader.GetInt64(reader.GetOrdinal("Voucher_ID")),
+                                Voucher_Date = reader.GetDateTime(reader.GetOrdinal("Voucher_Date")),
+                                Voucher_Type = reader.GetString(reader.GetOrdinal("Voucher_Type")),
+                                Lister_ID = reader.GetByte(reader.GetOrdinal("Lister_ID")),
+                                Voucher_State = reader.GetByte(reader.GetOrdinal("Voucher_State")),
+                                Checker_ID = reader.GetByte(reader.GetOrdinal("Checker_ID")),
+                                Auditor_ID = reader.GetByte(reader.GetOrdinal("Auditor_ID")),
+                                Approver_ID = reader.GetByte(reader.GetOrdinal("Approver_ID")),
+                                VDetail_Sn = reader.GetByte(reader.GetOrdinal("VDetail_Sn")),
+                                Subject_ID = reader.GetInt32(reader.GetOrdinal("Subject_ID")),
+                                Subject_DrCr = reader.GetString(reader.GetOrdinal("Subject_DrCr")),
+                                DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount")),
+                                Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
+                                Product_ID = reader.GetByte(reader.GetOrdinal("Product_ID")),
+                                Voucher_Note = reader.GetString(reader.GetOrdinal("Voucher_Note")),
+                                Subject_Name = reader.GetString(reader.GetOrdinal("Subject_Name")),
+                                Dept_Name = reader.GetString(reader.GetOrdinal("Dept_Name")),
+                                Product_Name = reader.GetString(reader.GetOrdinal("Product_Name")),
+                                Lister_Name = reader.GetString(reader.GetOrdinal("Lister_Name")),
+                                Checker_Name = reader.GetString(reader.GetOrdinal("Checker_Name")),
+                                Auditor_Name = reader.GetString(reader.GetOrdinal("Auditor_Name")),
+                                Approver_Name = reader.GetString(reader.GetOrdinal("Approver_Name")),
+                            };
+
+                            reportDataList.Add(reportItem);
+                        }
+                    }
+                }
+            }
+
+            return reportDataList;
+        }
+
+        //讀取總分類帳
+        public List<VoucherReportViewModel> GetVDinLedger(DateTime? startDate, DateTime? endDate, string selectedSubjects, string selectedDepts)
+        {
+            List<VoucherReportViewModel> reportDataList = new List<VoucherReportViewModel>();
+            var selectedDeptsArray = selectedDepts?.Split(new[] { ',' });
+            var selectedSubjectsArray = selectedSubjects?.Split(new[] { ',' });
+
+            using (SqlConnection conn=new SqlConnection(ConnStr))
+            {
+                var query = new StringBuilder(@"
+                SELECT VD.*,V.*,
+                S.Subject_Name AS Subject_Name,
+                D.Dept_Name AS Dept_Name,
+                P.Product_Name AS Product_Name,
+                U1.User_Name AS Lister_Name,
+                U2.User_Name AS Checker_Name,
+                U3.User_Name AS Auditor_Name,
+                U4.User_Name As Approver_Name
+                FROM VoucherDetail VD
+                INNER JOIN Voucher V ON VD.Voucher_ID=V.Voucher_ID
+                INNER JOIN AccountingSubject S ON VD.Subject_ID=S.Subject_ID
+                INNER JOIN Department D ON VD.Dept_ID=D.Dept_ID
+                INNER JOIN Product P ON VD.Product_ID=P.Product_ID
+                INNER JOIN [User] U1 ON V.Lister_ID=U1.User_Id
+                INNER JOIN [User] U2 ON V.Checker_ID=U2.User_Id
+                INNER JOIN [User] U3 ON V.Auditor_ID=U3.User_Id
+                INNER JOIN [User] U4 ON V.Approver_ID=U4.User_Id
+                WHERE 
+                (V.Voucher_Date>=@startDate)
+                AND (V.Voucher_Date<=@endDate)
+                ");
+
+                if (selectedDeptsArray!=null && selectedDeptsArray.Length>0)
+                {
+                    query.Append(" AND D.Dept_Name IN (");
+                    for(int i=0;i< selectedDeptsArray.Length; i++)
+                    {
+                        var paramName = "@deptParam" + i;
+                        query.Append(i == 0 ? paramName : "," + paramName);
+                    }
+                    query.Append(')');
+                }
+
+                if(selectedSubjectsArray!=null && selectedSubjectsArray.Length>0)
+                {
+                    query.Append(" AND S.Subject_Name IN (");
+                    for (int i=0;i< selectedSubjectsArray.Length; i++)
+                    {
+                        var paramName = "@subjectParam" + i;
+                        query.Append(i==0? paramName : "," + paramName);
+                    }
+                    query.Append(')');
+                }
+                //添加排序條件
+                query.Append(" ORDER BY S.Subject_ID,V.Voucher_ID, VD.VDetail_Sn");
+
+                using(SqlCommand cmd = new SqlCommand(query.ToString(),conn))
+                {
+                    cmd.Parameters.AddWithValue("@startDate",startDate);
+                    cmd.Parameters.AddWithValue("@endDate", endDate);
+
+                    //把每一個輸入的部門名稱添加到SQL命令
+                    for (int i = 0; i < selectedDeptsArray.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@deptParam"+i, selectedDeptsArray[i]);
+                    }
+                    
+                    //把每一個輸入的科目名稱添加到SQL命令
+                    for(int i = 0;i< selectedSubjectsArray.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@subjectParam"+i, selectedSubjectsArray[i]);
+                    }
+
+                    conn.Open();
+                    using(SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                       while(reader.Read())
+                        {
+                            VoucherReportViewModel reportItem = new VoucherReportViewModel
+                            {
+                                //填充VoucherReportViewModel中的屬性
+                                Voucher_ID = reader.GetInt64(reader.GetOrdinal("Voucher_ID")),
+                                Voucher_Date = reader.GetDateTime(reader.GetOrdinal("Voucher_Date")),
+                                Voucher_Type = reader.GetString(reader.GetOrdinal("Voucher_Type")),
+                                Lister_ID = reader.GetByte(reader.GetOrdinal("Lister_ID")),
+                                Voucher_State = reader.GetByte(reader.GetOrdinal("Voucher_State")),
+                                Checker_ID = reader.GetByte(reader.GetOrdinal("Checker_ID")),
+                                Auditor_ID = reader.GetByte(reader.GetOrdinal("Auditor_ID")),
+                                Approver_ID = reader.GetByte(reader.GetOrdinal("Approver_ID")),
+                                VDetail_Sn = reader.GetByte(reader.GetOrdinal("VDetail_Sn")),
+                                Subject_ID = reader.GetInt32(reader.GetOrdinal("Subject_ID")),
+                                Subject_DrCr = reader.GetString(reader.GetOrdinal("Subject_DrCr")),
+                                DrCr_Amount = reader.GetDecimal(reader.GetOrdinal("DrCr_Amount")),
+                                Dept_ID = reader.GetString(reader.GetOrdinal("Dept_ID")),
+                                Product_ID = reader.GetByte(reader.GetOrdinal("Product_ID")),
+                                Voucher_Note = reader.GetString(reader.GetOrdinal("Voucher_Note")),
+                                Subject_Name = reader.GetString(reader.GetOrdinal("Subject_Name")),
+                                Dept_Name = reader.GetString(reader.GetOrdinal("Dept_Name")),
+                                Product_Name = reader.GetString(reader.GetOrdinal("Product_Name")),
+                                Lister_Name = reader.GetString(reader.GetOrdinal("Lister_Name")),
+                                Checker_Name = reader.GetString(reader.GetOrdinal("Checker_Name")),
+                                Auditor_Name = reader.GetString(reader.GetOrdinal("Auditor_Name")),
+                                Approver_Name = reader.GetString(reader.GetOrdinal("Approver_Name")),
+                            };
+                            reportDataList.Add(reportItem);
+                        }
+                    }
+                }
+
+            }
+            return reportDataList;
+        }
+
 
         //新增傳票明細
         public void NewVoucherDetail(VoucherDetail voucherDetail)

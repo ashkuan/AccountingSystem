@@ -1,0 +1,327 @@
+﻿@model List<AccountingSystem.Models.VoucherReportViewModel>
+@{
+    ViewBag.Title = "總分類帳";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<style>
+    .selected-options {
+        display: inline-block;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        margin-left: 10px;
+        background-color: #fff3cd;
+        border-radius: 4px;
+        padding: 5px;
+    }
+
+        .selected-options button {
+            float: left;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+</style>
+<h2>@ViewBag.Title</h2>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+    <br />
+}
+
+@using (Html.BeginForm("SearchVDinLedger", "FinancialReports", FormMethod.Post, new { id = "form1" }))
+{
+    <div class="row">
+        <div class="col-md-4">
+            <label for="startDate">起始日期：</label>
+            <input type="date" id="startDate" name="startDate" class="form-control" value="@Request.QueryString["startDate"]" required />
+        </div>
+        <div class="col-md-4">
+            <label for="endDate">截止日期：</label>
+            <input type="date" id="endDate" name="endDate" class="form-control" value="@Request.QueryString["endDate"]" required />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <label for="Subject">科&emsp;&emsp;目：</label>
+            <input class="form-control" type="text" id="Subject" list="subjectsList" name="Subject" value="@Request.QueryString["Subject"]" autocomplete="off" />
+            <datalist id="subjectsList"></datalist>
+        </div>
+        <div id="subjectOptions"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <label for="Dept">部&emsp;&emsp;門：</label>
+            <input class="form-control" type="text" list="DeptList" id="Dept" name="Dept" value="@Request.QueryString["Dept"]" autocomplete="off" />
+            <datalist id="DeptList"></datalist>
+        </div>
+        <div id="deptOptions"></div>
+    </div>
+    <br />
+    @Html.Hidden("SelectedSubjects", "")
+    @Html.Hidden("SelectedDepts", "")
+    <button type="submit" class="btn btn-outline-dark">搜尋</button>
+}
+
+@if (ViewBag.SelectedStartDate != null || ViewBag.SelectedEndDate != null || ViewBag.SelectedSubjects != null || ViewBag.selectedDepts != null)
+{
+    <br />
+    <div class="alert alert-info">
+        <strong>查詢條件：</strong>
+        <br />
+        起始日期：@ViewBag.SelectedStartDate
+        <br />
+        截止日期：@ViewBag.SelectedEndDate
+        <br />
+        科目：@ViewBag.SelectedSubjects
+        <br />
+        部門：@ViewBag.selectedDepts
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col-sm-1">科目編號</th>
+                <th class="col-sm-1">會計科目</th>
+                <th class="col-sm-2">傳票日期</th>
+                <th class="col-sm-1 text-center">類別</th>
+                <th class="col-sm-1 text-center">傳票編號</th>
+                <th class="col-sm-1 text-center">序號</th>
+                <th class="col-sm-1">部門認列</th>
+                <th class="col-sm-2 text-center">摘要</th>
+                <th class="col-sm-1">借/貸</th>
+                <th class="align-text-bottom text-center">金額</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="col-sm-1 text-center">@item.Subject_ID</td>
+                    <td class="col-sm-1">@item.Subject_Name</td>
+                    <td class="col-sm-2">@item.Voucher_Date.ToString("yyyy-MM-dd")</td>
+                    <td class="col-sm-1 text-center">@item.Voucher_Type</td>
+                    <td class="col-sm-1">@item.Voucher_ID</td>
+                    <td class="col-sm-1 text-center">@item.VDetail_Sn</td>
+                    <td class="col-sm-1 text-center">@item.Dept_Name</td>
+                    <td class="col-sm-2">@item.Voucher_Note</td>
+                    <td class="col-sm-1 text-center">@item.Subject_DrCr</td>
+                    <td class="align-text-bottom text-end">@(item.DrCr_Amount.ToString("#,###"))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col-sm-1">科目編號</th>
+                <th class="col-sm-1">會計科目</th>
+                <th class="col-sm-2">傳票日期</th>
+                <th class="col-sm-1 text-center">類別</th>
+                <th class="col-sm-1 text-center">傳票編號</th>
+                <th class="col-sm-1 text-center">序號</th>
+                <th class="col-sm-1">部門認列</th>
+                <th class="col-sm-2 text-center">摘要</th>
+                <th class="col-sm-1">借/貸</th>
+                <th class="align-text-bottom text-center">金額</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="11" class="fs-4 text-center">查無資料。</td>
+            </tr>
+        </tbody>
+    </table>
+
+}
+@using (Html.BeginForm("GenerateLedgerReport", "FinancialReports", FormMethod.Get, new { id = "form2" }))
+{
+    @Html.Hidden("startDate", Request.QueryString["startDate"] ?? string.Empty)
+    @Html.Hidden("endDate", Request.QueryString["endDate"] ?? string.Empty)
+    @Html.Hidden("selectedSubjects", Request.QueryString["SelectedSubjects"] ?? string.Empty)
+    @Html.Hidden("SelectedDepts", Request.QueryString["SelectedDepts"] ?? string.Empty)
+    <br />
+    <button type="submit" class="btn btn-outline-dark">下載報表(Excel)</button>
+}
+
+<script>
+    let selectedSubjects = [];
+
+
+    //雙擊事件來獲取科目列表
+    $('#Subject').on('dblclick', function () {
+        selectSubjectDatalist($(this));
+    })
+
+    $('#Subject').on('input', function () {
+        var value = $(this).val();
+        if (selectedSubjects.indexOf(value) === -1) {
+            selectedSubjects.push(value);
+            updateDisplay();
+            $(this).val('');
+        }
+    });
+
+    //Datalist的選項
+    function selectSubjectDatalist(inputElement) {
+        var key = inputElement.val();
+        $.ajax({
+            url: '/MaintenanceVoucher/GetSubjects',
+            type: "GET",
+            dataType: "json",
+            data: {
+                key: key,
+                searchField: "IDOrName"
+            },
+            success: function (data) {
+                //清除現有選項
+                $('#subjectList').empty();
+                data.forEach(function (item) {
+                    $('<option>').val(item.value).text(item.value).text(item.label).appendTo('#subjectsList');
+                })
+                console.log(data);
+            }
+        })
+    }
+
+
+    var selectedDepts = [];
+    $('#Dept').on('dblclick', function () {
+        selectDeptDatalist($(this));
+    });
+
+    $('#Dept').on('input', function () {
+        var value = $(this).val();
+        if (selectedDepts.indexOf(value) === -1) {
+            selectedDepts.push(value);
+            updateDisplayDept();
+            $(this).val('');
+        }
+    });
+
+    function selectDeptDatalist(inputElement) {
+        var key = inputElement.val();
+        $.ajax({
+            url: '/MaintenanceVoucher/GetDepts',
+            type: "GET",
+            data: {
+                key: key,
+                searchField: "IDOrName"
+            },
+            success: function (data) {
+                //清除現有選項
+                $('#DeptList').empty();
+                data.forEach(function (item) {
+                    $('<option>').val(item.value).text(item.value).text(item.label).appendTo('#DeptList');
+                })
+                console.log(data);
+            }
+        })
+    }
+
+    //更新顯示
+    function updateDisplay() {
+        $('#subjectOptions').empty();
+        var selectedSubjectValues = [];
+        selectedSubjects.forEach(function (subject, index) {
+            var div = $('<div>', { class: 'selected-options' }).text(subject);
+            var removeBtn = $('<button class="border-0 badge bg-light text-dark">', { class: 'close-btn' }).text('X').on('click', function () {
+                removeSubject(index);
+            });
+            div.append(removeBtn);
+            $('#subjectOptions').append(div);
+            selectedSubjectValues.push(subject);
+        });
+        $('input[name="SelectedSubjects"]').val(selectedSubjectValues.join(','));
+    }
+
+    //移除科目
+    function removeSubject(index) {
+        selectedSubjects.splice(index, 1);
+        updateDisplay();
+    }
+
+    //更新顯示Dept
+    function updateDisplayDept() {
+        $('#deptOptions').empty();
+        var selectedDeptValues = [];
+        selectedDepts.forEach(function (Dept, index) {
+            var div = $('<div>', { class: 'selected-options' }).text(Dept);
+            var removeBtn = $('<button class="border-0 badge bg-light text-dark">', { class: 'close-btn' }).text('X').on('click', function () {
+                removeDept(index);
+            });
+            div.append(removeBtn);
+            $('#deptOptions').append(div);
+            selectedDeptValues.push(Dept);
+        });
+        $('input[name="SelectedDepts"]').val(selectedDeptValues.join(','));
+
+    }
+
+    //移除部門
+    function removeDept(index) {
+        selectedDepts.splice(index, 1);
+        updateDisplayDept();
+    }
+
+    function validateDates() {
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+
+        if (startDate && endDate && startDate > endDate) {
+            alert('起始日期不能晚於截止日期!');
+            //阻止表單提交
+            return false;
+        }
+        //允許表單提交
+        return true;
+    }
+
+    //搜尋表單驗證
+    function validateForm1() {
+        //驗證日期
+        if (!validateDates()) {
+            return false;
+        }
+
+        //驗證已選科目
+        if (selectedSubjects.length == 0) {
+            alert("請至少選擇一個科目!");
+            return false;
+        }
+
+        //驗證已選部門
+        if (selectedDepts.length == 0) {
+            alert("請至少選擇一個部門!");
+            return false;
+        }
+
+        return true;
+    }
+
+    $('form').submit(function (e) {
+        //驗證日期
+        if (!validateDates()) {
+            e.preventDefault();
+            return;
+        }
+    })
+
+
+    $('#form1').submit(function (e) {
+        if (!validateForm1()) {
+            e.preventDefault();
+            return;
+        }
+
+    });
+</script>

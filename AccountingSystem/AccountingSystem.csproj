@@ -406,7 +406,7 @@
     <Content Include="Views\MaintenanceVoucher\EditVoucherDetail.cshtml" />
     <Content Include="Views\Sweet\Alert.cshtml" />
     <Content Include="Views\FinancialReports\SearchVoucherDetails.cshtml" />
-    <Content Include="Views\FinancialReports\GeneralLedger.cshtml" />
+    <Content Include="Views\FinancialReports\SearchVDinLedger.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -441,6 +441,7 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Reports\Ledger.rdlc" />
     <EmbeddedResource Include="Reports\Journal.rdlc" />
   </ItemGroup>
   <PropertyGroup>
