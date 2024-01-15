@@ -197,7 +197,7 @@
         });
     });
 
-    
+
 
     document.getElementById("submitBtn").addEventListener("click", function () {
         //獲取所有必須填入的輸入框
@@ -216,12 +216,10 @@
             Swal.fire({
                 title: '是否確定新增?',
                 showDenyButton: true,
-                showCancelButton: true,
                 confirmButtonText: "儲存",
-                denyButtonText: `不儲存`
+                denyButtonText: '不儲存'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // 用户确认新增，检查借贷平衡并提交表单
                     checkBalanceAndSubmit();
                 } else if (result.isDenied) {
                     Swal.fire("暫不儲存新增的傳票明細", "", "info");
@@ -264,8 +262,7 @@
             }
         }
 
-        
-    });
 
+    });
 
 </script>

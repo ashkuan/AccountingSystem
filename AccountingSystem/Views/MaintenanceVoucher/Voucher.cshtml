@@ -19,24 +19,24 @@
 <table class="table table-bordered">
     <thead>
         <tr class="table-dark">
-            <th class="col-sm-1">傳票編碼</th>
-            <th class="col-sm-2">傳票日期</th>
-            <th class="col-sm-1">傳票種類</th>
-            <th class="col-sm-1">傳票建立</th>
-            <th class="col-sm-1">傳票狀態</th>
-            <th class="col-sm-1">
+            <th class="col-sm-1 align-middle">傳票編碼</th>
+            <th class="col-sm-2 align-middle">傳票日期</th>
+            <th class="col-sm-1 text-center align-middle">傳票種類</th>
+            <th class="col-sm-1 text-center align-middle">傳票建立</th>
+            <th class="col-sm-1 text-center align-middle">傳票狀態</th>
+            <th class="col-sm-1 text-center">
                 會計室長<br>
-                &emsp;簽核
+                簽核
             </th>
-            <th class="col-sm-1">
+            <th class="col-sm-1 text-center">
                 財務經理<br>
-                &emsp;簽核
+                簽核
             </th>
-            <th class="col-sm-1">
-                &emsp;總經理<br>
-                &emsp;簽核
+            <th class="col-sm-1 text-center">
+                總經理<br>
+                簽核
             </th>
-            <th class="col-sm-2"></th>
+            <th class="col-sm-2 text-center"></th>
         </tr>
     </thead>
     <tbody>
@@ -46,10 +46,10 @@
                 <tr>
                     <th class="col-sm-1">@voucher.Voucher_ID</th>
                     <th class="col-sm-2">@voucher.Voucher_Date.ToString("yyyy-MM-dd")</th>
-                    <th class="col-sm-1">@voucher.Voucher_Type</th>
-                    <th class="col-sm-1">&emsp;@voucher.Lister_Name</th>
-                    <th class="col-sm-1">
-                        &emsp;@switch (@voucher.Voucher_State)
+                    <th class="col-sm-1 text-center">@voucher.Voucher_Type</th>
+                    <th class="col-sm-1 text-center">@voucher.Lister_Name</th>
+                    <th class="col-sm-1 text-center">
+                        @switch (@voucher.Voucher_State)
                         {
                             case 0:
                                 <text>建立</text>
@@ -74,10 +74,10 @@
                                 break;
                         }
                     </th>
-                    <th class="col-sm-1">&emsp;@voucher.Checker_Name</th>
-                    <th class="col-sm-1">&emsp;@voucher.Auditor_Name</th>
-                    <th class="col-sm-1">&emsp;@voucher.Approver_Name</th>
-                    <th class="col-sm-3">
+                    <th class="col-sm-1 text-center">@voucher.Checker_Name</th>
+                    <th class="col-sm-1 text-center">@voucher.Auditor_Name</th>
+                    <th class="col-sm-1 text-center">@voucher.Approver_Name</th>
+                    <th class="col-sm-2">
                         <button class="btn btn-outline-dark btn-sm" onclick="location.href='@Url.Action("EditVoucher", new { Voucher_ID = voucher.Voucher_ID })'">
                             明細
                         </button>

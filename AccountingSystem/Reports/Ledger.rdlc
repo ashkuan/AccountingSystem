@@ -901,6 +901,7 @@
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
             <DataSetName>Journal</DataSetName>
             <Top>1.6637cm</Top>
             <Left>0.09701cm</Left>

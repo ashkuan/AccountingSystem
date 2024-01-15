@@ -111,47 +111,28 @@ namespace AccountingSystem.Controllers
         [HttpPost]
         public ActionResult CreateVoucherDetail(List<VoucherDetail> voucherDetails)
         {
-            //全域變數來存所有錯誤行數
-            List<int> errorRows= new List<int>();
             var Voucher_ID = (long)Session["Voucher_ID"];
             ViewBag.Voucher_ID = Voucher_ID;
+
             bool hasErrors = false;
             List<string> errorMessagesList=new List<string>();
+            //存錯誤的行號
+            List<int> errorRows=new List<int>();
 
             for (int i= 0;i < voucherDetails.Count;i++)
             {
                 var detail = voucherDetails[i];
-                var subject = dbmanager.GetAccountingSubjects().
-                                        FirstOrDefault(s => s.Subject_Name == detail.Subject_Name);
-                if (subject != null)
-                {
-                    detail.Subject_ID = subject.Subject_ID;
-                }
-
-                var dept = dbmanager.GetDept().
-                                        FirstOrDefault(s => s.Dept_Name == detail.Dept_Name);
-                if (dept != null)
-                {
-                    detail.Dept_ID = dept.Dept_ID;
-                }
-                                                                                                                   
-                var product=dbmanager.GetProducts().
-                                        FirstOrDefault(s => s.Product_Name == detail.Product_Name);
-                if (product != null)
-                {
-                    detail.Product_ID = product.Product_ID;
-                }
 
                 //定義參數
                 var parameters = new Dictionary<string, object>
                 {
                     {"Voucher_ID",Voucher_ID},
                     {"VDetail_Sn",detail.VDetail_Sn },
-                    {"Subject_ID",detail.Subject_ID},
+                    {"Subject_Name",detail.Subject_Name},
                     {"Subject_DrCr",detail.Subject_DrCr},
                     {"DrCr_Amount",detail.DrCr_Amount},
-                    {"Dept_ID",detail.Dept_ID},
-                    {"Product_ID",detail.Product_ID},
+                    {"Dept_Name",detail.Dept_Name},
+                    {"Product_Name",detail.Product_Name},
                     {"Voucher_Note",detail.Voucher_Note},
                 };
                 try
@@ -161,31 +142,16 @@ namespace AccountingSystem.Controllers
                 }
                 catch (Exception ex)
                 {
-                    errorMessagesList.Add(ex.Message);
-                    //抓到錯誤，把錯誤行號添加到errorRows
+                    errorMessagesList.Add($"第{i+1}行錯誤：<br/>{ex.Message}<br/>");
                     errorRows.Add(i+1);
                     hasErrors = true;
                 }
             }
 
-            StringBuilder errorMessages = new StringBuilder();
-            if (errorRows.Count == errorMessagesList.Count)
-            {
-                for (int i = 0; i < errorMessagesList.Count; i++)
-                {
-                    int row = errorRows[i];
-                    string message = errorMessagesList[i]; 
-                    errorMessages.AppendLine($"第 {row} 行錯誤: {message}");
-                }
-            }
-            else
-            {
-                errorMessages.AppendLine("錯誤訊息數量和行數不一致");
-            }
 
             if (hasErrors)
             {
-                ViewBag.ErrorMessage = errorMessages.ToString();
+                ViewBag.ErrorMessage = string.Join("\n", errorMessagesList);
                 return View(voucherDetails);
             }
             else
