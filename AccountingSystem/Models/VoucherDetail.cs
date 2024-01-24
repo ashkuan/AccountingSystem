@@ -16,5 +16,6 @@ namespace AccountingSystem.Models
         public string Subject_Name { get; set; }
         public string Dept_Name { get; set; }
         public string Product_Name { get; set; }
+        public bool HasError {  get; set; }
     }
 }

@@ -144,6 +144,7 @@ namespace AccountingSystem.Controllers
                 {
                     errorMessagesList.Add($"第{i+1}行錯誤：<br/>{ex.Message}<br/>");
                     errorRows.Add(i+1);
+                    detail.HasError = true;
                     hasErrors = true;
                 }
             }
