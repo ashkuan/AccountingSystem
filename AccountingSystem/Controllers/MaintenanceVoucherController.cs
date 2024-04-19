@@ -1,5 +1,5 @@
 ﻿using AccountingSystem.Models;
-
+using Microsoft.Reporting.WebForms;
 using System;
 
 using System.Collections.Generic;
@@ -47,10 +47,17 @@ namespace AccountingSystem.Controllers
         [HttpPost]
         public ActionResult CreateVoucher(Voucher voucher)
         {
+            //生成條碼
+            string barcode = GenerateBarcode(voucher.Voucher_ID);
+
+            //將條碼保存到傳票訊息裡
+            voucher.Barcode = barcode;
+
             DBmanager dbmanager = new DBmanager();
             try
             {
                 dbmanager.NewVoucher(voucher);
+
             }
             catch (Exception ex)
             {
@@ -74,8 +81,30 @@ namespace AccountingSystem.Controllers
         public ActionResult EditVoucher(Voucher Voucher)
         {
             DBmanager dbmanager = new DBmanager();
+            //先獲取原有的傳票訊息
+            Voucher existingVoucher= dbmanager.GetVoucherById(Voucher.Voucher_ID);
+            
+            //如果原有的傳票訊息中已有條碼，則保留原有的條碼
+            if(!string.IsNullOrEmpty(existingVoucher.Barcode))
+            {
+                Voucher.Barcode = existingVoucher.Barcode;
+            }
+            else
+            {
+                //如果原有的傳票訊息沒有條碼，就生成新的條碼
+                string barcode = GenerateBarcode(Voucher.Voucher_ID);
+                Voucher.Barcode = barcode;
+            }
+
             dbmanager.UpdateVoucher(Voucher);
             return RedirectToAction("voucher");
+        }
+
+        //生成條碼
+        public string GenerateBarcode(long Voucher_ID)
+        {
+            string barcode = "V" + Voucher_ID.ToString();
+            return barcode;
         }
 
         public ActionResult DeleteVoucher(long Voucher_ID)
@@ -218,6 +247,8 @@ namespace AccountingSystem.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        
+
         public ActionResult GetProducts(string key, string searchField)
         {
             DBmanager dbmanager = new DBmanager();
@@ -232,6 +263,46 @@ namespace AccountingSystem.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        //添加匯出RDLC(PDF)報表
+        public ActionResult ExportToPDF(long Voucher_ID)
+        {
+            //根據Voucher_ID獲取相應的數據
+            DBmanager dbmanager = new DBmanager();
+            Voucher voucher = dbmanager.GetVoucherById(Voucher_ID);
+            //創建ReportViewer
+            ReportViewer reportViewer = new ReportViewer();
+            reportViewer.ProcessingMode = ProcessingMode.Local;
+
+            //加載RDLC文件
+            reportViewer.LocalReport.ReportPath = Server.MapPath("~/Reports/Voucher.rdlc");
+
+            //傳遞數據到報表
+            reportViewer.LocalReport.DataSources.Add(new ReportDataSource("VoucherReportViewModel", new List<VoucherReportViewModel>()));
+
+            //定義匯出參數
+            string mimeType,encoding, fileNameExtension;
+            string[] streams;
+            Warning[] warnings;
+            byte[] renderedBytes;
+
+            //設置匯出格式為PDF
+            string deviceInfo = 
+                "<DeviceInfo>" +
+                " <OutputFormat>PDF</OutputFormat>" +
+                "<PageWidth>8.5in</PageWidth>" +
+                "<PageHeight>11in</PageHeight>" +
+                "<MarginTop>0.5in</MarginTop>" +
+                "<MarginLeft>0.5in</MarginLeft>" +
+                "<MarginRight>0.5in</MarginRight>" +
+                "<MarginBottom>0.5in</MarginBottom>" +
+                "</DeviceInfo>";
+
+            //執行報表生成
+            renderedBytes = reportViewer.LocalReport.Render("PDF", deviceInfo, out mimeType, out encoding, out fileNameExtension, out streams, out warnings);
+
+            //返回PDF文件
+            return File(renderedBytes, mimeType);
+        }
     }
 
 }

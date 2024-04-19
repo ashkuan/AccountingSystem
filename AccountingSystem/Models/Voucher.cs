@@ -17,5 +17,6 @@ namespace AccountingSystem.Models
         public string Checker_Name { get; set; }
         public string Auditor_Name { get; set; }
         public string Approver_Name { get; set; }
+        public string Barcode { get; set; }
     }
 }

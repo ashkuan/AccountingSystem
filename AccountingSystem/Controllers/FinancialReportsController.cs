@@ -21,7 +21,6 @@ namespace AccountingSystem.Controllers
         {
             DBmanager dBmanager = new DBmanager();
             List<VoucherReportViewModel> voucherReportViewModel = dBmanager.GetVouchersDetailsReports();
-            // 初始化视图模型或从数据库获取数据
             return View(voucherReportViewModel);
         }
 
@@ -180,7 +179,7 @@ namespace AccountingSystem.Controllers
 
             //調用生成PDF的方法，這個方法將返回一個FileResult
             return File(renderedBytes, mimeType, $"LedgerReport_{DateTime.Now.ToString("yyyyMMddHHmmss")}.{fileNameExtension}");
-        }       
+        }
         #endregion
     }
 }

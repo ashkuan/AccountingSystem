@@ -43,8 +43,13 @@
     <br />
     <br />
 
-
-    @Html.ActionLink("➕新增", "CreateVoucherDetail", new { Voucher_ID=Model.Voucher_ID }, new { @class = "btn btn-outline-dark btn-md" })
+    <div class="row">
+        &emsp;
+        @Html.ActionLink("➕新增", "CreateVoucherDetail", new { Voucher_ID = Model.Voucher_ID }, new { @class = "col-sm-1 btn btn-outline-dark btn-md" })
+        &emsp;
+        <button type="button" class="col-sm-1 btn btn-outline-dark btn-md">📁匯出</button>
+    </div>
+    
     <br />
     <br />
     <table class="table">
@@ -196,5 +201,14 @@
         });
         return false; // 防止默認行為
     }
+
+    function exportToPDF() {
+        //取得當前傳票ID
+        var voucherId = document.getElementById("Voucher_ID").value;
+
+        //發送請求到後端Controller
+        window.location.href = "/MaintenanceVoucher/ExportToPDF?Voucher_ID=" + voucherId;
+    }
+
 </script>
 
